@@ -1,0 +1,99 @@
+[project]
+name = "brainkit"
+version = "0.1.0"
+description = "Portable, human-readable agent brain: Git-native markdown bundles with hybrid RAG retrieval, gated writes, and cited answers"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+    { name = "Paldom", email = "3684864+Paldom@users.noreply.github.com" }
+]
+requires-python = ">=3.11"
+dependencies = []
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Typing :: Typed",
+]
+
+[project.urls]
+Homepage = "https://github.com/Paldom/brainkit"
+Repository = "https://github.com/Paldom/brainkit"
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+# Supply-chain freshness buffer: resolver ignores releases newer than this.
+# Bump on each release / periodically (see python-supply-chain skill, step 5).
+exclude-newer = "2026-06-28T00:00:00Z"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+required-version = "0.15.20"
+
+[tool.ruff.lint]
+select = [
+    "E", "W",   # pycodestyle
+    "F",        # pyflakes
+    "I",        # isort (import sorting)
+    "UP",       # pyupgrade
+    "B",        # flake8-bugbear
+    "C4",       # flake8-comprehensions
+    "SIM",      # flake8-simplify
+    "RUF",      # Ruff-specific rules
+]
+ignore = ["E501"]  # line length is the formatter's job
+
+[tool.ruff.lint.isort]
+known-first-party = ["brainkit"]
+
+[tool.ruff.format]
+quote-style = "double"
+docstring-code-format = true
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+addopts = "-ra --strict-markers --strict-config"
+filterwarnings = ["error"]
+
+[tool.coverage.run]
+source = ["src"]
+branch = true
+parallel = true
+relative_files = true
+
+[tool.coverage.report]
+fail_under = 90
+show_missing = true
+skip_covered = true
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_unused_ignores = true
+
+[dependency-groups]
+dev = [
+    "hypothesis>=6.155.7",
+    "mypy==2.1.0",
+    "pre-commit==4.3.0",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "ruff==0.15.20",
+]

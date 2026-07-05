@@ -1,0 +1,7 @@
+# Last matching rule wins — keep the catch-all first, security-sensitive paths after.
+*                      @Paldom
+/.github/              @Paldom
+/.github/CODEOWNERS    @Paldom
+/AGENTS.md             @Paldom
+/CLAUDE.md             @Paldom
+/.claude/              @Paldom

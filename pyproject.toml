@@ -26,6 +26,9 @@ classifiers = [
 Homepage = "https://github.com/Paldom/brainkit"
 Repository = "https://github.com/Paldom/brainkit"
 
+[project.scripts]
+brainkit = "brainkit.cli:main"
+
 [build-system]
 requires = ["hatchling>=1.27"]
 build-backend = "hatchling.build"

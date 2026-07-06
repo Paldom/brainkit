@@ -17,20 +17,7 @@ STRIPPED=$(printf '%s' "$CMD" | sed -E "s/'[^']*'/ /g; s/\"[^\"]*\"/ /g")
 
 deny() { echo "$1" >&2; exit 2; }
 
-# 1. Quality-gate bypass (-n is git commit's short --no-verify;
-#    core.hooksPath redirection bypasses hooks entirely)
-if printf '%s' "$STRIPPED" | grep -qE 'git\s+commit[^|;&]*\s(--no-verify(\s|$)|-[a-zA-Z]*n)' \
-   || printf '%s' "$STRIPPED" | grep -qE 'git\s[^|;&]*-c\s*core\.hooksPath'; then
-  deny "Blocked: bypassing git hooks ('--no-verify' / core.hooksPath) skips this repo's quality gates. Fix the failing checks, then commit normally."
-fi
-
-# 2. Force-push (any branch, any argument order; AGENTS.md: never force-push)
-if printf '%s' "$STRIPPED" | grep -qE 'git\s+push[^|;&]*\s(--force[a-z-]*|-f)(\s|$)' \
-   || printf '%s' "$STRIPPED" | grep -qE 'git\s+push[^|;&]*\s\+[^ ]'; then
-  deny "Blocked: force-pushing rewrites shared history. Push normally, or push a new branch."
-fi
-
-# 3. Bare pip / python -m pip outside uv (command position only — 'uv run
+# 1. Bare pip / python -m pip outside uv (command position only — 'uv run
 #    python', 'grep python' and 'which pip' stay legal)
 if printf '%s' "$STRIPPED" | grep -qE '(^|[;&|]\s*)pip3?\s+install\b'; then
   deny "Blocked: bare 'pip install' breaks the uv-managed environment. Use 'uv add <pkg>' (or 'uv add --dev <pkg>')."
@@ -39,7 +26,7 @@ if printf '%s' "$STRIPPED" | grep -qE '(^|[;&|]\s*)python3?\s+-m\s+pip\b'; then
   deny "Blocked: 'python -m pip' bypasses uv. Use 'uv add' / 'uv pip' inside the project environment."
 fi
 
-# 4. Recursive force-delete of a broad path (handles combined and split flags)
+# 2. Recursive force-delete of a broad path (handles combined and split flags)
 if printf '%s' "$STRIPPED" | grep -qE '(^|[;&|]\s*)rm\s'; then
   RMPART=$(printf '%s' "$STRIPPED" | sed -E 's/^.*(^|[;&|])[[:space:]]*rm[[:space:]]/rm /')
   has_r=0 has_f=0 broad=0

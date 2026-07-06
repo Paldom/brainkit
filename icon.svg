@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <title>brainkit — bracketed notes</title>
+  <rect id="bg" width="1024" height="1024" rx="229" fill="#2A2A2E"/>
+  <!-- Citation brackets around note lines: structured, cited knowledge at the core.
+       Brackets are explicit mirrored paths so the linter can verify symmetry and bbox. -->
+  <g id="glyph">
+    <path id="bracket-l" d="M 368 288 H 288 V 736 H 368" fill="none" stroke="#E8E8EA" stroke-width="64"/>
+    <path id="bracket-r" d="M 656 288 H 736 V 736 H 656" fill="none" stroke="#E8E8EA" stroke-width="64"/>
+    <g fill="#F5A623">
+      <rect x="368" y="368" width="288" height="64" rx="32"/>
+      <rect x="368" y="480" width="288" height="64" rx="32"/>
+      <rect x="368" y="592" width="288" height="64" rx="32"/>
+    </g>
+  </g>
+</svg>

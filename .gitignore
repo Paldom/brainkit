@@ -216,3 +216,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# runtime brain output (built from research runs; not committed)
+brain/
+
+# cross-validation reports (session artifacts; not committed)
+.claude/curator-reports/

@@ -254,7 +254,17 @@ class TestCli:
         assert main(["--brain", brain, "ingest", str(tmp_path / "missing")]) == 1
         assert "Error:" in capsys.readouterr().err
 
-        assert main(["--brain", brain, "search", "anything"]) == 1
+        # Searching a brain directory that does not exist is a path mistake,
+        # not an empty result — fail loudly (exit 2) rather than "No matches",
+        # so a wrong/relative --brain can't masquerade as an empty brain.
+        assert main(["--brain", brain, "search", "anything"]) == 2
+        assert "not found" in capsys.readouterr().err
+
+        # A real, populated brain with no hit for the query IS "No matches".
+        project = make_project(tmp_path)
+        assert main(["--brain", brain, "ingest", str(project)]) == 0
+        capsys.readouterr()
+        assert main(["--brain", brain, "search", "zzz-nonexistent-term"]) == 1
         assert "No matches" in capsys.readouterr().out
 
         assert main(["--brain", brain]) == 0  # no command -> help

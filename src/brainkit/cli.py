@@ -15,12 +15,33 @@ import os
 import sys
 from pathlib import Path
 
+from brainkit.brain import NOTES_DIRNAME, build_index, ingest_research_project, search
 from brainkit.brain import _iter_notes as iter_notes
-from brainkit.brain import build_index, ingest_research_project, search
 
 
 def _default_brain() -> str:
     return os.environ.get("BRAINKIT_DIR", "brain")
+
+
+def _require_brain(brain_dir: Path) -> str | None:
+    """Return an error message if ``brain_dir`` is not an existing brain.
+
+    A read command against a missing directory (e.g. a *relative* ``--brain``
+    resolved against the wrong cwd) would otherwise return an empty result set,
+    which is indistinguishable from a brain that genuinely has no matches. Fail
+    loudly instead so callers see the path mistake rather than a false negative.
+    """
+    if not brain_dir.is_dir():
+        return (
+            f"brain directory not found: {brain_dir} (cwd: {Path.cwd()}) — "
+            "pass an absolute --brain path or set BRAINKIT_DIR"
+        )
+    if not (brain_dir / NOTES_DIRNAME).is_dir():
+        return (
+            f"{brain_dir} exists but has no {NOTES_DIRNAME}/ — not a brain yet; "
+            "ingest a researchkit project first"
+        )
+    return None
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -67,6 +88,12 @@ def main(argv: list[str] | None = None) -> int:
             f"source notes ({report.skipped_sources} skipped) -> {brain_dir}"
         )
         return 0
+
+    if args.command in ("search", "index", "list"):
+        err = _require_brain(brain_dir)
+        if err is not None:
+            print(f"Error: {err}", file=sys.stderr)
+            return 2
 
     if args.command == "search":
         hits = search(brain_dir, args.query, limit=args.limit)

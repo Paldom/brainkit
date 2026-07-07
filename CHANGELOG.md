@@ -10,6 +10,9 @@ and this project adheres to
 
 ### Added
 
+- Richer index nodes: every source line in `index.md` now carries a one-line
+  description (the note's first prose paragraph, truncated), so agents can pick
+  sources from the index without opening each note.
 - Integration hardening (cross-review + live agent QA): ingestion is
   manifest-driven (stale material files from earlier runs are ignored; glob
   fallback without a manifest), source-note identity is the URL even when

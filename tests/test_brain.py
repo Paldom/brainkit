@@ -152,6 +152,40 @@ class TestIndexAndSearch:
         index = build_index(tmp_path / "brain")
         assert "0 topics · 0 sources" in index.read_text(encoding="utf-8")
 
+    def test_index_describes_each_source(self, tmp_path: Path) -> None:
+        project = make_project(tmp_path)
+        brain = tmp_path / "brain"
+        ingest_research_project(project, brain)
+        index = (brain / "index.md").read_text(encoding="utf-8")
+        assert "— Reddit says agents rock." in index
+        assert "— Formal analysis of agent runtime safety" in index
+
+    def test_index_description_skips_headings_images_and_truncates(
+        self, tmp_path: Path
+    ) -> None:
+        prose = "word " * 60  # well past the 160-char cap
+        materials = {
+            "001-noisy.md": _material(
+                "Noisy page",
+                "https://n.test/1",
+                f"# Page heading\n\n![banner](x.png)\n\n{prose}",
+            ),
+            "002-heading-only.md": _material(
+                "Heading only", "https://n.test/2", "# Nothing but a heading"
+            ),
+        }
+        project = make_project(tmp_path, materials=materials)
+        brain = tmp_path / "brain"
+        ingest_research_project(project, brain)
+        index = (brain / "index.md").read_text(encoding="utf-8")
+        noisy_line = next(line for line in index.splitlines() if "n.test/1" in line)
+        assert "Page heading" not in noisy_line
+        assert "![banner]" not in noisy_line
+        assert "— word word" in noisy_line
+        assert noisy_line.endswith("…")
+        heading_only = next(line for line in index.splitlines() if "n.test/2" in line)
+        assert "—" not in heading_only  # no prose -> no description
+
     def test_search_ranks_and_cites(self, tmp_path: Path) -> None:
         project = make_project(tmp_path)
         brain = tmp_path / "brain"

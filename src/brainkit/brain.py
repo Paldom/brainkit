@@ -36,6 +36,7 @@ INDEX_FILENAME = "index.md"
 _TOKEN = re.compile(r"[a-z0-9]+")
 _TITLE_WEIGHT = 3
 _SNIPPET_CHARS = 240
+_DESC_CHARS = 160
 
 
 @dataclass(frozen=True)
@@ -330,8 +331,26 @@ def _iter_notes(brain_dir: Path) -> list[tuple[Path, Note]]:
     ]
 
 
+def _description(body: str) -> str:
+    """One-line description of a note: its first prose paragraph, truncated.
+
+    Lets an agent pick sources from ``index.md`` without opening every note.
+    Headings and images are skipped; anything else counts as prose.
+    """
+    # ponytail: no markdown stripping — link/emphasis syntax passes through;
+    # add a stripper only if index descriptions prove too noisy in practice.
+    for paragraph in body.split("\n\n"):
+        text = " ".join(paragraph.split())
+        if not text or text.startswith(("#", "![")):
+            continue
+        if len(text) > _DESC_CHARS:
+            text = text[: _DESC_CHARS - 1].rstrip() + "…"
+        return text
+    return ""
+
+
 def build_index(brain_dir: Path) -> Path:
-    """Regenerate ``index.md``: every topic with its cited sources."""
+    """Regenerate ``index.md``: every topic with its cited, described sources."""
     notes = _iter_notes(brain_dir)
     topics = [(p, n) for p, n in notes if n.meta.get("type") == "topic"]
     sources = [(p, n) for p, n in notes if n.meta.get("type") == "source"]
@@ -348,10 +367,14 @@ def build_index(brain_dir: Path) -> Path:
             note_projects = source_note.meta.get("projects", "")
             members = [s.strip() for s in note_projects.split(",") if s.strip()]
             if project in members:
-                lines.append(
+                line = (
                     f"- [{source_note.title}]({source_note.meta.get('url', '')}) "
                     f"(`{source_path.stem}`)"
                 )
+                desc = _description(source_note.body)
+                if desc:
+                    line += f" — {desc}"
+                lines.append(line)
     index = brain_dir / INDEX_FILENAME
     index.parent.mkdir(parents=True, exist_ok=True)
     index.write_text("\n".join(lines) + "\n", encoding="utf-8")

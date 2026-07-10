@@ -1,7 +1,8 @@
 """brainkit CLI: build a brain from researchkit projects and query it.
 
-    brainkit ingest <researchkit-project-dir> [--brain DIR]
-    brainkit search "query" [--brain DIR] [-n N]
+    brainkit ingest <researchkit-project-dir> [--brain DIR] [--include-reports]
+    brainkit ingest-notes <dir-or-file.md> [--brain DIR]
+    brainkit search "query" [--brain DIR] [-n N] [--kind topic|source|report|note]
     brainkit index [--brain DIR]
     brainkit list [--brain DIR]
 
@@ -15,7 +16,14 @@ import os
 import sys
 from pathlib import Path
 
-from brainkit.brain import NOTES_DIRNAME, build_index, ingest_research_project, search
+from brainkit.brain import (
+    NOTES_DIRNAME,
+    IngestReport,
+    build_index,
+    ingest_notes,
+    ingest_research_project,
+    search,
+)
 from brainkit.brain import _iter_notes as iter_notes
 
 
@@ -44,6 +52,23 @@ def _require_brain(brain_dir: Path) -> str | None:
     return None
 
 
+def _resolve_input_path(raw: str) -> Path:
+    """Resolve a user-supplied path to an absolute one.
+
+    A relative path that doesn't exist under the current cwd is retried
+    against the shell's ``$PWD`` — ``uv run --directory`` changes cwd but
+    inherits PWD, which is exactly the footgun this covers.
+    """
+    path = Path(raw).expanduser()
+    if not path.is_absolute() and not path.exists():
+        pwd = os.environ.get("PWD", "")
+        if pwd and (Path(pwd) / raw).exists():
+            return (Path(pwd) / raw).resolve()
+    # resolve() (not absolute()) so symlinks/".." can't fork a project's
+    # brain identity between the cwd and $PWD branches
+    return path.resolve()
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="brainkit",
@@ -54,17 +79,44 @@ def build_parser() -> argparse.ArgumentParser:
         default=_default_brain(),
         help="Brain directory (default: $BRAINKIT_DIR or ./brain)",
     )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="Show per-file detail (e.g. why a material was skipped)",
+    )
     sub = parser.add_subparsers(dest="command")
 
     ingest = sub.add_parser(
-        "ingest", help="Ingest a researchkit project (result.json + materials/)"
+        "ingest",
+        help=(
+            "Ingest a researchkit project (result.json + materials/); "
+            "a boosted run's subprojects/ are ingested recursively"
+        ),
     )
     ingest.add_argument("project", help="Path to the researchkit project folder")
+    ingest.add_argument(
+        "--include-reports",
+        action="store_true",
+        help="Also chunk report.md '##' sections into notes (for materials-thin runs)",
+    )
+
+    notes = sub.add_parser(
+        "ingest-notes",
+        help="Ingest arbitrary frontmattered markdown (a file or directory)",
+    )
+    notes.add_argument("path", help="Markdown file or directory of *.md files")
 
     query = sub.add_parser("search", help="Search the brain; hits cite their sources")
     query.add_argument("query", help="Search terms")
     query.add_argument(
         "-n", "--limit", type=int, default=5, help="Max hits (default 5)"
+    )
+    query.add_argument(
+        "--kind",
+        choices=["topic", "source", "report", "note"],
+        default=None,
+        help="Only return notes of this type",
     )
 
     sub.add_parser("index", help="Regenerate index.md")
@@ -72,21 +124,50 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def _print_ingest_report(
+    report: IngestReport, brain_dir: Path, verbose: bool, indent: str = ""
+) -> None:
+    extras = ""
+    if report.report_notes:
+        extras += f" + {len(report.report_notes)} report notes"
+    print(
+        f"{indent}Ingested {report.topic!r}: topic note + "
+        f"{len(report.source_notes)} source notes{extras} "
+        f"({report.skipped_sources} skipped) -> {brain_dir}"
+    )
+    if verbose:
+        for reason in report.skip_reasons:
+            print(f"{indent}  skipped {reason}")
+    for sub_report in report.sub_reports:
+        _print_ingest_report(sub_report, brain_dir, verbose, indent + "  ")
+
+
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     brain_dir = Path(args.brain)
 
     if args.command == "ingest":
-        project_dir = Path(args.project)
+        project_dir = _resolve_input_path(args.project)
         try:
-            report = ingest_research_project(project_dir, brain_dir)
+            report = ingest_research_project(
+                project_dir, brain_dir, include_reports=args.include_reports
+            )
         except (FileNotFoundError, ValueError) as e:
             print(f"Error: {e}", file=sys.stderr)
             return 1
-        print(
-            f"Ingested {report.topic!r}: topic note + {len(report.source_notes)} "
-            f"source notes ({report.skipped_sources} skipped) -> {brain_dir}"
-        )
+        _print_ingest_report(report, brain_dir, args.verbose)
+        return 0
+
+    if args.command == "ingest-notes":
+        try:
+            written, skipped = ingest_notes(_resolve_input_path(args.path), brain_dir)
+        except (FileNotFoundError, ValueError) as e:
+            print(f"Error: {e}", file=sys.stderr)
+            return 1
+        print(f"Ingested {len(written)} notes ({len(skipped)} skipped) -> {brain_dir}")
+        if args.verbose:
+            for reason in skipped:
+                print(f"  skipped {reason}")
         return 0
 
     if args.command in ("search", "index", "list"):
@@ -96,12 +177,17 @@ def main(argv: list[str] | None = None) -> int:
             return 2
 
     if args.command == "search":
-        hits = search(brain_dir, args.query, limit=args.limit)
+        hits = search(brain_dir, args.query, limit=args.limit, kind=args.kind)
         if not hits:
             print("No matches.")
             return 1
         for hit in hits:
-            citation = f" <{hit.url}>" if hit.url else f" (research run: {hit.project})"
+            if hit.url:
+                citation = f" <{hit.url}>"
+            elif hit.project:
+                citation = f" (research run: {hit.project})"
+            else:
+                citation = f" (note: {hit.path.name})"
             print(f"[{hit.score}] {hit.title}{citation}")
             print(f"    {hit.snippet}")
             print(f"    note: {hit.path}")

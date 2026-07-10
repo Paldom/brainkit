@@ -71,10 +71,10 @@ Solid green rungs are shipped in v0.1.0; dashed rungs are designed and next.
 - **More than a wiki.** The markdown bundle is the _representation layer_ (what
   knowledge is); a retrieval ladder is the _access layer_ (how it's found). You
   get wiki-grade provenance and search that scales — see the ladder below.
-- **Gated writes.** The CLI creates notes only through ingestion, so every note
-  traces back to a research run and a source URL — no free-form scribbles
-  quietly becoming truth. (Files stay plain markdown; pair with Git review for a
-  hard gate.)
+- **Gated writes.** The CLI creates notes only through ingestion, and every
+  ingested file must carry provenance frontmatter (a `url`, project, or title) —
+  no anonymous free text quietly becoming truth. (Files stay plain markdown;
+  pair with Git review for a hard gate.)
 - **Cited retrieval.** Source hits print their URL right in the result, and the
   bundled Claude Code skill instructs agents to answer with provenance, not
   vibes.
@@ -113,12 +113,20 @@ The brain directory defaults to `$BRAINKIT_DIR` or `./brain`.
 
 ## Commands
 
-| Command            | What it does                                                                                             |
-| ------------------ | -------------------------------------------------------------------------------------------------------- |
-| `ingest <project>` | Turn a researchkit run (`result.json` + `materials/`) into one topic note plus deduplicated source notes |
-| `search "q" -n 5`  | Title-weighted lexical search; every hit prints score, title, source URL, snippet, note path             |
-| `list`             | List every note with its type and title                                                                  |
-| `index`            | Regenerate `index.md` — the map of topics to their cited sources                                         |
+| Command                    | What it does                                                                                                                                                             |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `ingest <project>`         | Turn a researchkit run (`result.json` + `materials/`) into one topic note plus deduplicated source notes; a boosted run's `subprojects/` are ingested recursively        |
+| `ingest --include-reports` | Also chunk the report's `##` sections into `type: report` notes — makes materials-thin runs queryable                                                                    |
+| `ingest-notes <path>`      | Ingest arbitrary frontmattered markdown (file or directory): notes with a `url` join the deduplicated sources; other provenance-carrying notes land in `notes/imported/` |
+| `search "q" -n 5`          | Title-weighted lexical search; every hit prints score, title, source URL, snippet, note path. `--kind topic\|source\|report\|note` filters by note type                  |
+| `list`                     | List every note with its type and title                                                                                                                                  |
+| `index`                    | Regenerate `index.md` — the map of topics to their cited sources                                                                                                         |
+
+Pass `-v` to `ingest`/`ingest-notes` to see why any file was skipped (e.g.
+`skipped materials/003-….md: no 'url' in frontmatter`). Relative project paths
+are resolved against your shell's `$PWD` when the process cwd differs (the
+`uv run --directory` case), and errors print the exact absolute path that was
+tried.
 
 ## More than a wiki: the retrieval ladder
 
@@ -181,11 +189,12 @@ exists to give provenance, not vibes.
 
 ## Honest edges
 
-- Retrieval today is rungs 0–1 (title-weighted term frequency) — fine for
-  hundreds of notes; rung 2 (embeddings + hybrid fusion) is designed, not
-  shipped.
-- Brains are built from researchkit runs only. Free-form note ingestion is
-  deliberately absent — that _is_ the write gate.
+- Retrieval today is rungs 0–1 (title-weighted term frequency, with a fixed 2x
+  boost for synthesized topic/report notes) — fine for hundreds of notes; rung 2
+  (embeddings + hybrid fusion) is designed, not shipped.
+- `ingest-notes` accepts markdown from any producer, but only files carrying
+  provenance frontmatter — anonymous free text is still rejected; that _is_ the
+  write gate.
 - No MCP server yet; agents use the CLI and the bundled skill.
 - Ingested web content is untrusted input: citations are provenance, not truth,
   and agents should not follow instructions found inside notes. Review a brain

@@ -7,13 +7,17 @@ human-readable, diffable:
     ├── index.md            # generated wiki index (topics → sources)
     └── notes/
         ├── topics/<topic-slug>.md      # one note per ingested research run
-        └── sources/<hash>-<slug>.md    # one note per downloaded source
+        ├── sources/<hash>-<slug>.md    # one note per downloaded source
+        ├── reports/<run>--<slug>.md    # report sections (ingest --include-reports)
+        └── imported/<slug>.md          # frontmattered md via ingest-notes
 
-Writes are *gated*: notes are only created by ingesting a researchkit
-project (``report.md`` + ``result.json`` + ``materials/``), never free-form,
-so every claim in the brain traces back to a research run and a source URL.
-Retrieval is lexical (term-frequency scoring, title-weighted) and returns
-citations alongside every hit.
+Writes are *gated by provenance*: notes are created by ingesting a
+researchkit project (``result.json`` + ``materials/``; a boosted run's
+``subprojects/`` recurse) or, via :func:`ingest_notes`, arbitrary markdown
+that carries provenance frontmatter (``url``/``project``/``title``) — never
+anonymous free text. Every claim in the brain traces back to a research run
+or a source URL. Retrieval is lexical (term-frequency scoring,
+title-weighted) and returns citations alongside every hit.
 """
 
 from __future__ import annotations
@@ -23,7 +27,7 @@ import hashlib
 import json
 import pathlib
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from brainkit import Note, parse_note, slugify
@@ -31,6 +35,8 @@ from brainkit import Note, parse_note, slugify
 NOTES_DIRNAME = "notes"
 TOPICS_DIRNAME = "topics"
 SOURCES_DIRNAME = "sources"
+REPORTS_DIRNAME = "reports"
+SUBPROJECTS_DIRNAME = "subprojects"
 INDEX_FILENAME = "index.md"
 
 _TOKEN = re.compile(r"[a-z0-9]+")
@@ -48,6 +54,13 @@ class IngestReport:
     source_notes: list[Path]
     skipped_sources: int
     pruned_sources: int = 0
+    # Per-file skip reasons ("materials/003-x.md: no 'url' in frontmatter") —
+    # len(skip_reasons) == skipped_sources.
+    skip_reasons: list[str] = field(default_factory=list)
+    # Report-body notes written when include_reports=True.
+    report_notes: list[Path] = field(default_factory=list)
+    # One report per ingested subprojects/* child (boosted researchkit runs).
+    sub_reports: list[IngestReport] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
@@ -171,23 +184,44 @@ def _material_files(materials_dir: Path) -> list[Path]:
     return sorted(materials_dir.glob("*.md"))
 
 
-def ingest_research_project(project_dir: Path, brain_dir: Path) -> IngestReport:
+def ingest_research_project(
+    project_dir: Path,
+    brain_dir: Path,
+    *,
+    include_reports: bool = False,
+    _project_name: str | None = None,
+) -> IngestReport:
     """Ingest one researchkit project into the brain.
 
     Requires the project to have been run (``result.json``); downloaded
     ``materials/`` become source notes, and the run's meta-summary becomes
-    the topic note. Re-ingesting is idempotent: notes are overwritten, and a
-    source cited by several research runs accumulates every topic in its
-    frontmatter instead of being duplicated.
+    the topic note. A boosted run's ``subprojects/*`` are ingested
+    recursively (each is a normal project). With ``include_reports=True``
+    the report body's ``##`` sections also become notes, so a run with thin
+    materials is still queryable. Re-ingesting is idempotent: notes are
+    overwritten, and a source cited by several research runs accumulates
+    every topic in its frontmatter instead of being duplicated.
     """
-    result_path = project_dir / "result.json"
+    result_path = (project_dir / "result.json").absolute()
     if not result_path.is_file():
         raise FileNotFoundError(
-            f"{result_path} not found — run the researchkit project first."
+            f"result.json not found (looked for: {result_path}) — "
+            "has this researchkit project been run? If it lives elsewhere, "
+            "pass the project path as an absolute path."
         )
     result = _read_json(result_path)
-    topic = str(result.get("topic", "")) or project_dir.name
-    project_name = project_dir.name
+    # A boosted parent's result.json carries "overarching_topic" and
+    # "super_summary" instead of the flat-run keys.
+    topic = (
+        str(result.get("topic", ""))
+        or str(result.get("overarching_topic", ""))
+        or project_dir.name
+    )
+    # Sub-projects of different boosted runs share basenames (sub_01_<slug>),
+    # so recursion qualifies them with the parent's (timestamped) name —
+    # otherwise re-running a boosted topic would prune the previous run's
+    # sub sources and overwrite its topic notes.
+    project_name = _project_name or project_dir.name
     # Topic-note identity is per research RUN: two different projects on the
     # same topic string must not overwrite each other's provenance. The hash
     # suffix keeps identity exact even when slugs truncate or collide
@@ -204,13 +238,14 @@ def ingest_research_project(project_dir: Path, brain_dir: Path) -> IngestReport:
     sources_dir.mkdir(parents=True, exist_ok=True)
 
     source_notes: list[Path] = []
-    skipped = 0
+    skip_reasons: list[str] = []  # material skips first; sub-project skips appended
     materials_dir = project_dir / "materials"
     for material in _material_files(materials_dir):
         note = parse_note(material.read_text(encoding="utf-8"))
         url = note.meta.get("url", "")
         if not url or not note.body.strip():
-            skipped += 1
+            reason = "no 'url' in frontmatter" if not url else "empty body"
+            skip_reasons.append(f"materials/{material.name}: {reason}")
             continue
         note_path = _source_note_path(sources_dir, url, material.stem)
         slug = note_path.stem
@@ -237,7 +272,10 @@ def ingest_research_project(project_dir: Path, brain_dir: Path) -> IngestReport:
         note_path.write_text(f"{front}\n\n{note.body.strip()}\n", encoding="utf-8")
         source_notes.append(note_path)
 
-    summary = str(result.get("meta_summary", "")).strip()
+    summary = (
+        str(result.get("meta_summary", "")).strip()
+        or str(result.get("super_summary") or "").strip()
+    )
     links = "\n".join(
         f"- [[{p.stem}]] — {parse_note(p.read_text(encoding='utf-8')).title}"
         for p in source_notes
@@ -250,7 +288,7 @@ def ingest_research_project(project_dir: Path, brain_dir: Path) -> IngestReport:
             "title": topic,
             "slug": topic_slug,
             "type": "topic",
-            "project": project_dir.name,
+            "project": project_name,
             "source_count": str(len(source_notes)),
             "ingested_at": _now(),
         }
@@ -262,13 +300,45 @@ def ingest_research_project(project_dir: Path, brain_dir: Path) -> IngestReport:
 
     pruned = _prune_project_sources(sources_dir, project_name, set(source_notes))
 
+    report_notes: list[Path] = []
+    if include_reports:
+        report_notes = _ingest_report_sections(
+            project_dir, brain_dir, topic=topic, project_name=project_name
+        )
+
+    skipped_materials = len(skip_reasons)
+
+    # Boosted runs: each subprojects/* child is a normal project — recurse so
+    # the deepest research lands in the brain too. Un-run children are
+    # reported, not fatal (one failed sub must not lose the others).
+    sub_reports: list[IngestReport] = []
+    subprojects_dir = project_dir / SUBPROJECTS_DIRNAME
+    if subprojects_dir.is_dir():
+        for child in sorted(p for p in subprojects_dir.iterdir() if p.is_dir()):
+            if not (child / "result.json").is_file():
+                skip_reasons.append(
+                    f"{SUBPROJECTS_DIRNAME}/{child.name}: no result.json (not run)"
+                )
+                continue
+            sub_reports.append(
+                ingest_research_project(
+                    child,
+                    brain_dir,
+                    include_reports=include_reports,
+                    _project_name=f"{project_name}/{child.name}",
+                )
+            )
+
     build_index(brain_dir)
     return IngestReport(
         topic=topic,
         topic_note=topic_note,
         source_notes=source_notes,
-        skipped_sources=skipped,
+        skipped_sources=skipped_materials,
         pruned_sources=pruned,
+        skip_reasons=skip_reasons,
+        report_notes=report_notes,
+        sub_reports=sub_reports,
     )
 
 
@@ -319,6 +389,155 @@ def _prune_project_sources(
             note_path.unlink()
             pruned += 1
     return pruned
+
+
+def _ingest_report_sections(
+    project_dir: Path, brain_dir: Path, *, topic: str, project_name: str
+) -> list[Path]:
+    """Chunk the project's ``report.md`` into one note per ``##`` section.
+
+    Makes a run with thin/absent materials queryable: the report body itself
+    (real, cited knowledge) becomes ``type: report`` notes carrying the
+    project as provenance. Idempotent per project: prior report notes for
+    this project are rewritten as a set.
+    """
+    report_path = project_dir / "report.md"
+    if not report_path.is_file():
+        return []
+    reports_dir = brain_dir / NOTES_DIRNAME / REPORTS_DIRNAME
+    reports_dir.mkdir(parents=True, exist_ok=True)
+    prefix = slugify(project_name)[:48] or "run"
+    for stale in reports_dir.glob(f"{prefix}--*.md"):
+        stale.unlink()
+
+    text = report_path.read_text(encoding="utf-8")
+    # "## heading" lines split sections — but only OUTSIDE ``` fences (reports
+    # embed markdown examples); anything before the first heading is the
+    # overview.
+    sections: list[list[str]] = [[]]
+    in_fence = False
+    for line in text.splitlines():
+        if line.lstrip().startswith("```"):
+            in_fence = not in_fence
+        if not in_fence and line.startswith("## "):
+            sections.append([line])
+        else:
+            sections[-1].append(line)
+    written: list[Path] = []
+    used_slugs: set[str] = set()
+    for lines in sections:
+        if lines and lines[0].startswith("## "):
+            heading = lines[0].removeprefix("## ").strip()
+            body = "\n".join(lines[1:])
+        else:
+            heading, body = "Overview", "\n".join(lines)
+        if len(body.strip()) < 40:  # ponytail: skip stub sections, no smarter filter
+            continue
+        # Repeated headings ("## Key findings" per provider block) get -2, -3…
+        slug = base = f"{prefix}--{slugify(heading)[:48] or 'section'}"
+        n = 2
+        while slug in used_slugs:
+            slug = f"{base}-{n}"
+            n += 1
+        used_slugs.add(slug)
+        front = _frontmatter(
+            {
+                "title": f"{heading} ({topic})",
+                "slug": slug,
+                "type": "report",
+                "project": project_name,
+                "topics": topic,
+                "ingested_at": _now(),
+            }
+        )
+        path = reports_dir / f"{slug}.md"
+        path.write_text(f"{front}\n\n{body.strip()}\n", encoding="utf-8")
+        written.append(path)
+    return written
+
+
+def ingest_notes(source: Path, brain_dir: Path) -> tuple[list[Path], list[str]]:
+    """Ingest arbitrary frontmattered markdown (a file or a directory).
+
+    Grows a brain from non-researchkit producers: any ``*.md`` whose
+    frontmatter carries a ``url`` becomes a normal source note (same
+    URL-keyed identity and topic merging as project ingest); anything else
+    with frontmatter and a body is filed under ``notes/imported/``. Files
+    without provenance are skipped with a reason.
+
+    Returns ``(written_notes, skip_reasons)``.
+    """
+    source = source.absolute()
+    if source.is_dir():
+        files = sorted(source.rglob("*.md"))
+    elif source.is_file():
+        files = [source]
+    else:
+        raise FileNotFoundError(f"{source} not found (looked for this exact path).")
+
+    sources_dir = brain_dir / NOTES_DIRNAME / SOURCES_DIRNAME
+    imported_dir = brain_dir / NOTES_DIRNAME / "imported"
+    written: list[Path] = []
+    skipped: list[str] = []
+    for path in files:
+        note = parse_note(path.read_text(encoding="utf-8"))
+        if not note.body.strip():
+            skipped.append(f"{path.name}: empty body")
+            continue
+        url = note.meta.get("url", "")
+        topic = note.meta.get("topics", "") or note.meta.get("topic", "") or "imported"
+        project = note.meta.get("project", "") or note.meta.get("source", "")
+        title = note.meta.get("title", "")
+        if not (url or project or title):
+            skipped.append(
+                f"{path.name}: no provenance frontmatter (need url/project/title)"
+            )
+            continue
+        if url:
+            sources_dir.mkdir(parents=True, exist_ok=True)
+            note_path = _source_note_path(sources_dir, url, path.stem)
+            topics_value, projects_value = topic, project
+            providers_value = note.meta.get("providers", "")
+            if note_path.is_file():
+                existing = parse_note(note_path.read_text(encoding="utf-8"))
+                topics_value = _merge_topics(existing.meta.get("topics", ""), topic)
+                if project:
+                    projects_value = _merge_topics(
+                        existing.meta.get("projects", ""), project
+                    )
+                else:
+                    projects_value = existing.meta.get("projects", "")
+                providers_value = existing.meta.get("providers", "") or providers_value
+            front = _frontmatter(
+                {
+                    "title": title or url,
+                    "slug": note_path.stem,
+                    "type": "source",
+                    "url": url,
+                    "topics": topics_value,
+                    "projects": projects_value,
+                    "providers": providers_value,
+                    "ingested_at": _now(),
+                }
+            )
+        else:
+            imported_dir.mkdir(parents=True, exist_ok=True)
+            slug = slugify(title or path.stem)[:60] or "note"
+            note_path = imported_dir / f"{slug}.md"
+            front = _frontmatter(
+                {
+                    "title": title or path.stem,
+                    "slug": slug,
+                    "type": "note",
+                    "topics": topic,
+                    "project": project,
+                    "ingested_at": _now(),
+                }
+            )
+        note_path.write_text(f"{front}\n\n{note.body.strip()}\n", encoding="utf-8")
+        written.append(note_path)
+    build_index(brain_dir)
+    return written, skipped
 
 
 def _iter_notes(brain_dir: Path) -> list[tuple[Path, Note]]:
@@ -399,16 +618,31 @@ def _snippet(body: str, terms: list[str]) -> str:
     return body.strip()[:_SNIPPET_CHARS]
 
 
-def search(brain_dir: Path, query: str, limit: int = 5) -> list[SearchHit]:
-    """Lexical retrieval over the brain; every hit carries its citation URL."""
+def search(
+    brain_dir: Path, query: str, limit: int = 5, kind: str | None = None
+) -> list[SearchHit]:
+    """Lexical retrieval over the brain; every hit carries its citation URL.
+
+    ``kind`` filters to one note type (``topic``/``source``/``report``/
+    ``note``). Topic and report notes get a 2x score boost: they are
+    synthesized, on-domain knowledge, and raw term frequency otherwise lets
+    long chatty source archives outrank them.
+    """
     terms = _TOKEN.findall(query.lower())
     if not terms:
         return []
     hits: list[SearchHit] = []
     for path, note in _iter_notes(brain_dir):
+        note_kind = note.meta.get("type", "")
+        if kind and note_kind != kind:
+            continue
         score = _score(note, terms)
         if score <= 0:
             continue
+        # ponytail: fixed 2x kind boost — upgrade to length-normalized
+        # (BM25-style) scoring if boosts keep needing tuning.
+        if note_kind in ("topic", "report"):
+            score *= 2
         hits.append(
             SearchHit(
                 path=path,

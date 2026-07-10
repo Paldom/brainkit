@@ -10,11 +10,12 @@ description:
 
 # brainkit
 
-A brain is a directory of frontmattered markdown notes built exclusively from
-[researchkit](https://github.com/Paldom/researchkit) runs (gated writes): one
-topic note per research run, one source note per downloaded page, `index.md`
-tying them together. Everything is plain markdown — read it, grep it, and cite
-it exactly like source code.
+A brain is a directory of frontmattered markdown notes built from
+[researchkit](https://github.com/Paldom/researchkit) runs — plus any
+frontmattered markdown with provenance via `ingest-notes` (writes are gated by
+provenance, never anonymous free text): one topic note per research run, one
+source note per downloaded page, `index.md` tying them together. Everything is
+plain markdown — read it, grep it, and cite it exactly like source code.
 
 The brain directory is `$BRAINKIT_DIR` or `./brain`; pass `--brain DIR` to
 override per command. Run commands from the brainkit repo root.
@@ -22,17 +23,33 @@ override per command. Run commands from the brainkit repo root.
 ## Ingest a research run
 
 ```bash
-uv run brainkit ingest <path-to-researchkit-project-dir>
+uv run brainkit ingest <path-to-researchkit-project-dir>   # pass an ABSOLUTE path
 ```
 
 The project must have been run, ideally with materials downloaded
-(`researchkit ... --materials`). Re-ingesting is idempotent; a source cited by
-several research runs becomes ONE note accumulating all its topics.
+(`researchkit ... --materials`). A boosted run's `subprojects/` are ingested
+recursively — ingest the parent, get everything. Re-ingesting is idempotent; a
+source cited by several research runs becomes ONE note accumulating all its
+topics. Useful flags:
+
+- `--include-reports` — also chunk `report.md` `##` sections into notes
+  (recovers materials-thin runs).
+- `-v` — print why any material was skipped (usually: no `url` frontmatter).
+
+## Ingest other markdown
+
+```bash
+uv run brainkit ingest-notes <file-or-dir>
+```
+
+Any `*.md` with provenance frontmatter: a `url` merges into the deduplicated
+source notes; project/title-bearing notes land in `notes/imported/`.
 
 ## Query the brain
 
 ```bash
 uv run brainkit search "query" -n 5   # ranked hits, each with its source URL
+uv run brainkit search "query" --kind topic   # filter: topic|source|report|note
 uv run brainkit list                  # every note (type, slug, title)
 uv run brainkit index                 # regenerate index.md
 ```

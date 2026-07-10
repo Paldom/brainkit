@@ -10,6 +10,36 @@ and this project adheres to
 
 ### Added
 
+- Boosted-run ingestion (field feedback, 2026-07-08): `ingest` recurses into a
+  boosted researchkit run's `subprojects/*` (each a normal project) and
+  understands the boost-shaped parent `result.json`
+  (`overarching_topic`/`super_summary`), so deep runs no longer ingest to just a
+  topic note. Un-run sub-projects are reported, not fatal. Sub-project brain
+  identity is parent-qualified (`<parent-run>/<sub>`) because researchkit sub
+  names repeat across boosted runs — re-running a boosted topic no longer prunes
+  the previous run's sub notes.
+- `ingest --include-reports`: chunks `report.md` `##` sections into
+  `type: report` notes with project provenance — materials-thin runs stay
+  queryable. The splitter is fence-aware (`## ` inside code blocks is content)
+  and repeated headings get distinct `-2`/`-3` notes instead of overwriting each
+  other.
+- `ingest-notes <file|dir>`: ingest arbitrary frontmattered markdown from any
+  producer. Notes with a `url` join the deduplicated source notes; other
+  provenance-carrying notes land in `notes/imported/`; anonymous free text is
+  still rejected (the write gate is provenance, not producer).
+- Search: `--kind topic|source|report|note` filter, and a 2x score boost for
+  synthesized topic/report notes so long chatty source archives stop outranking
+  on-domain knowledge (cross-corroborated relevance feedback).
+- CLI `-v/--verbose`: per-file skip reasons on ingest
+  (`skipped materials/003-….md: no 'url' in frontmatter`).
+
+### Fixed
+
+- cwd footgun under `uv run --directory`: relative project paths are resolved
+  against the shell's `$PWD` when it differs from the process cwd, and a missing
+  `result.json` error now prints the exact absolute path that was tried instead
+  of misdiagnosing an un-run project.
+
 - Richer index nodes: every source line in `index.md` now carries a one-line
   description (the note's first prose paragraph, truncated), so agents can pick
   sources from the index without opening each note.

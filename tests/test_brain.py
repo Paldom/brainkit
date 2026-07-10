@@ -133,11 +133,14 @@ class TestIngest:
         assert report.source_notes == []
         assert "(none downloaded)" in report.topic_note.read_text(encoding="utf-8")
 
-    def test_missing_result_json_raises(self, tmp_path: Path) -> None:
+    def test_missing_result_json_raises_with_absolute_path(
+        self, tmp_path: Path
+    ) -> None:
         project = tmp_path / "unrun"
         project.mkdir()
-        with pytest.raises(FileNotFoundError, match="run the researchkit project"):
+        with pytest.raises(FileNotFoundError, match="looked for: /") as exc:
             ingest_research_project(project, tmp_path / "brain")
+        assert str(project / "result.json") in str(exc.value)
 
     def test_non_object_result_json_raises(self, tmp_path: Path) -> None:
         project = tmp_path / "weird"
@@ -427,6 +430,323 @@ class TestReingestReconciliation:
         assert len(sources) == 1
         text = sources[0].read_text(encoding="utf-8")
         assert "projects: p2" in text
+
+
+class TestBoostedIngest:
+    def _boosted_project(self, tmp_path: Path) -> Path:
+        parent = tmp_path / "20260708_boosted"
+        parent.mkdir()
+        (parent / "result.json").write_text(
+            json.dumps(
+                {
+                    "decomposed": True,
+                    "overarching_topic": "big topic",
+                    "super_summary": "Cross-cutting synthesis of the subs.",
+                    "subprojects": ["sub_01", "sub_02"],
+                }
+            ),
+            encoding="utf-8",
+        )
+        (parent / "report.md").write_text(
+            "# Super\n\n## Tensions\n\nWhere the subs disagree, at length enough "
+            "to pass the stub filter.\n",
+            encoding="utf-8",
+        )
+        for i, sub_topic in enumerate(["memory systems", "orchestration"], start=1):
+            make_project(
+                parent / "subprojects",
+                name=f"sub_{i:02d}",
+                topic=sub_topic,
+                materials={
+                    f"001-doc{i}.md": _material(
+                        f"Doc {i}", f"https://sub.test/{i}", f"Body of sub {i}."
+                    )
+                },
+            )
+        return parent
+
+    def test_recurses_into_subprojects(self, tmp_path: Path) -> None:
+        brain = tmp_path / "brain"
+        report = ingest_research_project(self._boosted_project(tmp_path), brain)
+        assert report.topic == "big topic"
+        assert "Cross-cutting synthesis" in report.topic_note.read_text(
+            encoding="utf-8"
+        )
+        assert len(report.sub_reports) == 2
+        assert {r.topic for r in report.sub_reports} == {
+            "memory systems",
+            "orchestration",
+        }
+        # both subs' sources landed in the brain
+        sources = list((brain / "notes" / "sources").glob("*.md"))
+        assert len(sources) == 2
+
+    def test_unrun_subproject_is_reported_not_fatal(self, tmp_path: Path) -> None:
+        parent = self._boosted_project(tmp_path)
+        unrun = parent / "subprojects" / "sub_03"
+        unrun.mkdir()
+        report = ingest_research_project(parent, tmp_path / "brain")
+        assert len(report.sub_reports) == 2
+        assert any("sub_03" in r for r in report.skip_reasons)
+        # an un-run sub is not a skipped SOURCE (red-team B7)
+        assert report.skipped_sources == 0
+
+    def test_include_reports_reaches_subprojects(self, tmp_path: Path) -> None:
+        parent = self._boosted_project(tmp_path)
+        sub_report = (
+            "# Report\n\nintro long enough to pass the stub filter easily.\n\n"
+            "## Key findings\n\nMemory injection amplification is the standout "
+            "risk found across sources.\n\n## Sources\n\n- x\n"
+        )
+        (parent / "subprojects" / "sub_01" / "report.md").write_text(
+            sub_report, encoding="utf-8"
+        )
+        brain = tmp_path / "brain"
+        report = ingest_research_project(parent, brain, include_reports=True)
+        assert report.report_notes  # parent super-summary sections
+        assert report.sub_reports[0].report_notes
+        notes = {p.name for p in (brain / "notes" / "reports").glob("*.md")}
+        assert any("key-findings" in n for n in notes)
+        assert not any("sources" in n for n in notes)  # stub section skipped
+        # report chunks are searchable and cite the run (identity is
+        # parent-qualified so boosted re-runs can't collide)
+        hits = search(brain, "memory injection amplification")
+        assert hits and hits[0].project == "20260708_boosted/sub_01"
+
+    def test_include_reports_reingest_is_idempotent(self, tmp_path: Path) -> None:
+        project = make_project(tmp_path)
+        (project / "report.md").write_text(
+            "## Only section\n\nA body comfortably past the forty character "
+            "stub filter.\n",
+            encoding="utf-8",
+        )
+        brain = tmp_path / "brain"
+        ingest_research_project(project, brain, include_reports=True)
+        ingest_research_project(project, brain, include_reports=True)
+        assert len(list((brain / "notes" / "reports").glob("*.md"))) == 1
+
+
+class TestBoostedReingestIdentity:
+    def test_two_boosted_runs_with_same_sub_names_coexist(self, tmp_path: Path) -> None:
+        # researchkit names subs sub_NN_<slug> with no timestamp; two boosted
+        # runs of the same topic must not prune each other (red-team B1).
+        def boosted(name: str, url: str) -> Path:
+            parent = tmp_path / name
+            parent.mkdir()
+            (parent / "result.json").write_text(
+                json.dumps({"overarching_topic": "same big topic"}),
+                encoding="utf-8",
+            )
+            make_project(
+                parent / "subprojects",
+                name="sub_01_memory",
+                topic="memory systems",
+                materials={"001-doc.md": _material("Doc", url, "Body text.")},
+            )
+            return parent
+
+        brain = tmp_path / "brain"
+        ingest_research_project(boosted("20260701_run", "https://a.test/1"), brain)
+        second = ingest_research_project(
+            boosted("20260708_run", "https://b.test/2"), brain
+        )
+        assert second.sub_reports[0].pruned_sources == 0
+        sources = list((brain / "notes" / "sources").glob("*.md"))
+        assert len(sources) == 2  # run 1's source survived run 2's ingest
+        topics = list((brain / "notes" / "topics").glob("*.md"))
+        assert len(topics) == 4  # 2 parents + 2 distinct sub topic notes
+
+
+class TestReportChunker:
+    def test_duplicate_headings_get_distinct_notes(self, tmp_path: Path) -> None:
+        project = make_project(tmp_path)
+        (project / "report.md").write_text(
+            "## Key findings\n\nFirst provider block, long enough to keep here.\n\n"
+            "## Key findings\n\nSecond provider block, also long enough to keep.\n",
+            encoding="utf-8",
+        )
+        brain = tmp_path / "brain"
+        report = ingest_research_project(project, brain, include_reports=True)
+        assert len(report.report_notes) == 2
+        names = sorted(p.name for p in (brain / "notes" / "reports").glob("*.md"))
+        assert len(names) == 2 and any(n.endswith("-2.md") for n in names)
+        bodies = [
+            (brain / "notes" / "reports" / n).read_text(encoding="utf-8") for n in names
+        ]
+        assert any("First provider" in b for b in bodies)
+        assert any("Second provider" in b for b in bodies)
+
+    def test_headings_inside_code_fences_do_not_split(self, tmp_path: Path) -> None:
+        project = make_project(tmp_path)
+        (project / "report.md").write_text(
+            "## Real section\n\nProse before the example, long enough to keep.\n\n"
+            "```markdown\n## Fenced pseudo-heading\ncontent inside the fence\n```\n\n"
+            "closing prose after the fence.\n",
+            encoding="utf-8",
+        )
+        brain = tmp_path / "brain"
+        report = ingest_research_project(project, brain, include_reports=True)
+        assert len(report.report_notes) == 1
+        body = report.report_notes[0].read_text(encoding="utf-8")
+        assert "Fenced pseudo-heading" in body  # stayed inside the one note
+        assert body.count("```") == 2  # fences balanced
+
+
+class TestSkipReasons:
+    def test_reasons_name_file_and_cause(self, tmp_path: Path) -> None:
+        materials = {
+            "001-nourl.md": "---\ntitle: No URL\n---\n\nBody without provenance.\n",
+            "002-empty.md": _material("Empty", "https://e.test/x", ""),
+        }
+        project = make_project(tmp_path, materials=materials)
+        report = ingest_research_project(project, tmp_path / "brain")
+        assert "materials/001-nourl.md: no 'url' in frontmatter" in report.skip_reasons
+        assert "materials/002-empty.md: empty body" in report.skip_reasons
+
+    def test_cli_verbose_prints_reasons(
+        self, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        materials = {
+            "001-nourl.md": "---\ntitle: No URL\n---\n\nBody.\n",
+        }
+        project = make_project(tmp_path, materials=materials)
+        brain = str(tmp_path / "brain")
+        assert main(["--brain", brain, "-v", "ingest", str(project)]) == 0
+        out = capsys.readouterr().out
+        assert "skipped materials/001-nourl.md: no 'url' in frontmatter" in out
+
+
+class TestSearchKinds:
+    def test_kind_filter(self, tmp_path: Path) -> None:
+        brain = tmp_path / "brain"
+        ingest_research_project(make_project(tmp_path), brain)
+        assert all(
+            "sources" in str(h.path) for h in search(brain, "agents", kind="source")
+        )
+        assert all(
+            "topics" in str(h.path) for h in search(brain, "agents", kind="topic")
+        )
+
+    def test_topic_note_outranks_chatty_source(self, tmp_path: Path) -> None:
+        # A long off-domain source mentioning the term more often than the
+        # topic note must not win on raw term frequency.
+        chatty = _material(
+            "Chatty archive",
+            "https://offdomain.test/x",
+            "freqai " * 6 + "unrelated import pipeline text.",
+        )
+        project = make_project(
+            tmp_path,
+            topic="freqai strategies",
+            summary="freqai strategy tuning findings. freqai models compared.",
+            materials={"001-chatty.md": chatty},
+        )
+        brain = tmp_path / "brain"
+        ingest_research_project(project, brain)
+        hits = search(brain, "freqai")
+        assert hits[0].path.parent.name == "topics"
+
+
+class TestIngestNotes:
+    def test_url_note_merges_with_project_sources(self, tmp_path: Path) -> None:
+        from brainkit.brain import ingest_notes
+
+        brain = tmp_path / "brain"
+        ingest_research_project(make_project(tmp_path), brain)
+        extra = tmp_path / "extra"
+        extra.mkdir()
+        # same URL as an ingested project source -> merges, no duplicate
+        (extra / "again.md").write_text(
+            "---\ntitle: Agents thread\nurl: https://reddit.test/r/agents\n"
+            "topic: hand notes\n---\n\nMy own annotations.\n",
+            encoding="utf-8",
+        )
+        (extra / "fresh.md").write_text(
+            "---\ntitle: Wiki lesson\nurl: https://wiki.test/lesson\n---\n\n"
+            "Lesson learned body.\n",
+            encoding="utf-8",
+        )
+        written, skipped = ingest_notes(extra, brain)
+        assert len(written) == 2 and not skipped
+        sources = list((brain / "notes" / "sources").glob("*.md"))
+        assert len(sources) == 3  # 2 from project + 1 fresh; shared URL merged
+        merged = next(p for p in sources if "reddit" in p.read_text(encoding="utf-8"))
+        assert "hand notes" in merged.read_text(encoding="utf-8")
+
+    def test_urlless_and_bare_files(self, tmp_path: Path) -> None:
+        from brainkit.brain import ingest_notes
+
+        brain = tmp_path / "brain"
+        d = tmp_path / "d"
+        d.mkdir()
+        (d / "wiki.md").write_text(
+            "---\ntitle: Team lesson\nproject: crypto-agents\n---\n\nLesson body.\n",
+            encoding="utf-8",
+        )
+        (d / "bare.md").write_text("no frontmatter at all\n", encoding="utf-8")
+        # frontmatter without any provenance field is also rejected (B5)
+        (d / "meta-only.md").write_text(
+            "---\nfoo: bar\n---\n\nBody.\n", encoding="utf-8"
+        )
+        written, skipped = ingest_notes(d, brain)
+        assert len(written) == 1
+        assert (brain / "notes" / "imported" / "team-lesson.md").is_file()
+        assert skipped == [
+            "bare.md: no provenance frontmatter (need url/project/title)",
+            "meta-only.md: no provenance frontmatter (need url/project/title)",
+        ]
+
+    def test_imported_note_without_project_cites_note_path(
+        self, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        from brainkit.brain import ingest_notes
+
+        brain = tmp_path / "brain"
+        f = tmp_path / "titled.md"
+        f.write_text(
+            "---\ntitle: Odd lesson\n---\n\nAn odd searchable lessonbody.\n",
+            encoding="utf-8",
+        )
+        ingest_notes(f, brain)
+        assert main(["--brain", str(brain), "search", "lessonbody"]) == 0
+        out = capsys.readouterr().out
+        assert "(research run: )" not in out
+        assert "(note: odd-lesson.md)" in out
+
+    def test_missing_path_raises(self, tmp_path: Path) -> None:
+        from brainkit.brain import ingest_notes
+
+        with pytest.raises(FileNotFoundError, match="not found"):
+            ingest_notes(tmp_path / "nope", tmp_path / "brain")
+
+    def test_cli_ingest_notes(
+        self, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        f = tmp_path / "one.md"
+        f.write_text(
+            "---\ntitle: One\nurl: https://one.test/x\n---\n\nBody.\n",
+            encoding="utf-8",
+        )
+        brain = str(tmp_path / "brain")
+        assert main(["--brain", brain, "ingest-notes", str(f)]) == 0
+        assert "Ingested 1 notes" in capsys.readouterr().out
+
+
+class TestPathResolution:
+    def test_relative_path_falls_back_to_pwd(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        # Simulate `uv run --directory`: cwd changed, $PWD still the caller's.
+        caller = tmp_path / "caller"
+        caller.mkdir()
+        project = make_project(caller, name="research_runs")
+        elsewhere = tmp_path / "toolrepo"
+        elsewhere.mkdir()
+        monkeypatch.chdir(elsewhere)
+        monkeypatch.setenv("PWD", str(caller))
+        brain = str(tmp_path / "brain")
+        assert main(["--brain", brain, "ingest", "research_runs"]) == 0
+        assert project.name == "research_runs"
 
 
 class TestSameTopicProjects:

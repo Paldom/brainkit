@@ -251,24 +251,33 @@ def ingest_research_project(
         slug = note_path.stem
         topics_value = topic
         projects_value = project_name
+        existing_meta: dict[str, str] = {}
         if note_path.is_file():
             existing = parse_note(note_path.read_text(encoding="utf-8"))
+            existing_meta = dict(existing.meta)
             topics_value = _merge_topics(existing.meta.get("topics", ""), topic)
             projects_value = _merge_topics(
                 existing.meta.get("projects", ""), project_name
             )
-        front = _frontmatter(
-            {
-                "title": note.meta.get("title", url),
-                "slug": slug,
-                "type": "source",
-                "url": url,
-                "topics": topics_value,
-                "projects": projects_value,
-                "providers": note.meta.get("providers", ""),
-                "ingested_at": _now(),
-            }
-        )
+        meta = {
+            "title": note.meta.get("title", url),
+            "slug": slug,
+            "type": "source",
+            "url": url,
+            "topics": topics_value,
+            "projects": projects_value,
+            "providers": note.meta.get("providers", ""),
+        }
+        # Research metadata passes through: where the content came from and
+        # when it was published matters as much as the content itself. On a
+        # shared-URL merge, a field the newer material lacks keeps the
+        # existing note's value (union semantics — never lose provenance).
+        for extra in ("source_type", "content_kind", "published", "final_url"):
+            value = note.meta.get(extra) or existing_meta.get(extra)
+            if value:
+                meta[extra] = value
+        meta["ingested_at"] = _now()
+        front = _frontmatter(meta)
         note_path.write_text(f"{front}\n\n{note.body.strip()}\n", encoding="utf-8")
         source_notes.append(note_path)
 
@@ -406,7 +415,12 @@ def _ingest_report_sections(
         return []
     reports_dir = brain_dir / NOTES_DIRNAME / REPORTS_DIRNAME
     reports_dir.mkdir(parents=True, exist_ok=True)
-    prefix = slugify(project_name)[:48] or "run"
+    # Digest-suffixed prefix: slug truncation alone collides for boosted
+    # sub-projects under a long parent name ("<parent>/sub_01_…" all truncate
+    # to the same 48 chars), and a collision makes each sub's stale-prune
+    # DELETE its siblings' report notes. Same identity trick as topic notes.
+    name_digest = hashlib.sha1(project_name.encode("utf-8")).hexdigest()[:8]
+    prefix = f"{slugify(project_name)[:40] or 'run'}-{name_digest}"
     for stale in reports_dir.glob(f"{prefix}--*.md"):
         stale.unlink()
 

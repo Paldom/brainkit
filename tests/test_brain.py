@@ -442,6 +442,24 @@ class TestReingestReconciliation:
         assert "projects: p2" in text
 
 
+class TestMetadataPassthrough:
+    def test_source_note_carries_research_metadata(self, tmp_path: Path) -> None:
+        materials = {
+            "001-doc.md": (
+                "---\ntitle: Doc\nurl: https://m.test/1\nfinal_url: https://m.test/1?x\n"
+                "source_type: social\ncontent_kind: transcript\nproviders: youtube\n"
+                "topic: t\npublished: 2026-06-01\nfetched_at: 2026-07-10\n---\n\nBody.\n"
+            )
+        }
+        project = make_project(tmp_path, materials=materials)
+        report = ingest_research_project(project, tmp_path / "brain")
+        text = report.source_notes[0].read_text(encoding="utf-8")
+        assert "source_type: social" in text
+        assert "content_kind: transcript" in text
+        assert "published: 2026-06-01" in text
+        assert "final_url: https://m.test/1?x" in text
+
+
 class TestBoostedIngest:
     def _boosted_project(self, tmp_path: Path) -> Path:
         parent = tmp_path / "20260708_boosted"
@@ -600,6 +618,35 @@ class TestReportChunker:
         body = report.report_notes[0].read_text(encoding="utf-8")
         assert "Fenced pseudo-heading" in body  # stayed inside the one note
         assert body.count("```") == 2  # fences balanced
+
+
+class TestReportPrefixCollision:
+    def test_long_parent_subprojects_keep_distinct_report_notes(
+        self, tmp_path: Path
+    ) -> None:
+        # A long parent name truncates every "<parent>/sub_NN" slug to the
+        # same 48 chars — each sub's stale-prune must NOT delete siblings.
+        parent = tmp_path / ("x" * 60 + "_parent_run")
+        parent.mkdir()
+        (parent / "result.json").write_text(
+            json.dumps({"overarching_topic": "big"}), encoding="utf-8"
+        )
+        for i in (1, 2):
+            sub = parent / "subprojects" / f"sub_{i:02d}_thing"
+            (sub / "materials").mkdir(parents=True)
+            (sub / "result.json").write_text(
+                json.dumps({"topic": f"t{i}", "meta_summary": "s"}), encoding="utf-8"
+            )
+            (sub / "report.md").write_text(
+                f"## Findings {i}\n\nBody long enough to pass the stub filter.\n",
+                encoding="utf-8",
+            )
+        brain = tmp_path / "brain"
+        report = ingest_research_project(parent, brain, include_reports=True)
+        written = sum(len(r.report_notes) for r in report.sub_reports)
+        on_disk = len(list((brain / "notes" / "reports").glob("*.md")))
+        assert written == 2
+        assert on_disk == written  # nothing pruned by a sibling
 
 
 class TestSkipReasons:

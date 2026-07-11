@@ -10,6 +10,12 @@ and this project adheres to
 
 ### Added
 
+- Research metadata passthrough (E2E completeness audit, 2026-07-11): source
+  notes now carry `source_type`, `content_kind`, `published`, and `final_url`
+  from the material frontmatter; on shared-URL merges, fields the newer material
+  lacks keep the existing note's value (union semantics — provenance is never
+  lost).
+
 - Boosted-run ingestion (field feedback, 2026-07-08): `ingest` recurses into a
   boosted researchkit run's `subprojects/*` (each a normal project) and
   understands the boost-shaped parent `result.json`
@@ -35,6 +41,11 @@ and this project adheres to
 
 ### Fixed
 
+- Report-note prefix collision (found by a 900-source live audit): a boosted run
+  under a long parent name truncated every `<parent>/sub_NN` slug to the same
+  prefix, so each sub-project's stale-prune deleted its siblings' report notes
+  (262 written, 63 surviving). The prefix now carries a name-digest suffix, same
+  identity trick as topic notes.
 - cwd footgun under `uv run --directory`: relative project paths are resolved
   against the shell's `$PWD` when it differs from the process cwd, and a missing
   `result.json` error now prints the exact absolute path that was tried instead

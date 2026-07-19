@@ -216,6 +216,46 @@ class TestIndexAndSearch:
         hits = search(brain, "kubernetes")
         assert hits[0].url == "https://k.test/1"
 
+    def test_equal_scores_break_by_recency(self, tmp_path: Path) -> None:
+        # Deterministic freshness: same relevance -> the fresher `published`
+        # wins; a note with no parseable date ranks last.
+        body = "quantum widget"
+        materials = {
+            "001-old.md": _material("Old take", "https://f.test/old", body).replace(
+                "fetched_at: 2026-07-05", "published: 2024-01-01"
+            ),
+            "002-new.md": _material("New take", "https://f.test/new", body).replace(
+                "fetched_at: 2026-07-05", "published: 2026-06-30T12:00:00"
+            ),
+            "003-undated.md": _material("Undated take", "https://f.test/na", body),
+        }
+        project = make_project(tmp_path, materials=materials)
+        brain = tmp_path / "brain"
+        ingest_research_project(project, brain)
+        hits = [h for h in search(brain, "quantum widget") if h.url]
+        # Content-date tie-break only: the undated note ranks last — it must
+        # not borrow freshness from its ingest time.
+        assert [h.url for h in hits] == [
+            "https://f.test/new",
+            "https://f.test/old",
+            "https://f.test/na",
+        ]
+        assert hits[0].published.startswith("2026-06-30")
+        assert hits[-1].published == ""  # unknown content date shows no date
+        assert hits[0].source_type == "web"  # trust tier surfaced on hits
+
+    def test_recency_rank_parses_and_defaults(self) -> None:
+        from brainkit.brain import _recency_rank
+
+        newer = _recency_rank("2026-06-30T12:00:00")
+        older = _recency_rank("2024-01-01")
+        ancient = _recency_rank("1969-12-31")  # pre-epoch: still a real date
+        assert newer < older < ancient < float("inf")
+        assert _recency_rank("") == float("inf")
+        assert _recency_rank(None) == float("inf")
+        assert _recency_rank("not a date") == float("inf")
+        assert _recency_rank("July 2026") == float("inf")  # non-ISO -> unknown
+
     def test_search_empty_query_and_no_match(self, tmp_path: Path) -> None:
         brain = tmp_path / "brain"
         ingest_research_project(make_project(tmp_path), brain)

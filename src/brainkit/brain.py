@@ -77,6 +77,13 @@ class SearchHit:
     url: str
     snippet: str
     project: str = ""
+    # The content's `published` date from the source material, "" when
+    # unknown — deliberately NOT the ingest time, so a displayed date always
+    # means the same thing the ranking used.
+    published: str = ""
+    # Trust tier from the source material ("social" vs "web"), "" when unknown
+    # — user-generated content is the classic poisoning vector, so surface it.
+    source_type: str = ""
 
 
 def _frontmatter(pairs: dict[str, str]) -> str:
@@ -272,7 +279,13 @@ def ingest_research_project(
         # when it was published matters as much as the content itself. On a
         # shared-URL merge, a field the newer material lacks keeps the
         # existing note's value (union semantics — never lose provenance).
-        for extra in ("source_type", "content_kind", "published", "final_url"):
+        for extra in (
+            "source_type",
+            "content_kind",
+            "published",
+            "final_url",
+            "content_digest",
+        ):
             value = note.meta.get(extra) or existing_meta.get(extra)
             if value:
                 meta[extra] = value
@@ -614,6 +627,22 @@ def build_index(brain_dir: Path) -> Path:
     return index
 
 
+def _recency_rank(date_text: object) -> float:
+    """Sort key: newer dates rank first, unparseable/absent dates last.
+
+    Deterministic recency (not LLM judgment, not decay windows): day
+    granularity via the date ORDINAL — no timestamps, so the rank is
+    identical on every machine (naive ``timestamp()`` would interpret the
+    date in host-local time) and pre-1970 dates need no special case.
+    ``inf`` puts unparseable/absent dates after every real date.
+    """
+    text = str(date_text or "").strip()
+    try:
+        return -float(dt.date.fromisoformat(text[:10]).toordinal())
+    except ValueError:
+        return float("inf")
+
+
 def _score(note: Note, terms: list[str]) -> int:
     body_tokens = _TOKEN.findall(note.body.lower())
     title_tokens = _TOKEN.findall(note.title.lower())
@@ -640,12 +669,18 @@ def search(
     ``kind`` filters to one note type (``topic``/``source``/``report``/
     ``note``). Topic and report notes get a 2x score boost: they are
     synthesized, on-domain knowledge, and raw term frequency otherwise lets
-    long chatty source archives outrank them.
+    long chatty source archives outrank them. Equal scores break by
+    recency (``published``, else ``ingested_at``): vector-free but not
+    time-blind — a superseded fact never outranks its fresher sibling at
+    the same relevance.
     """
     terms = _TOKEN.findall(query.lower())
     if not terms:
         return []
     hits: list[SearchHit] = []
+    # Tie-break rank on the CONTENT date only: an undated note must not
+    # borrow freshness from its ingest time and outrank known-fresh content.
+    content_rank: dict[Path, float] = {}
     for path, note in _iter_notes(brain_dir):
         note_kind = note.meta.get("type", "")
         if kind and note_kind != kind:
@@ -657,6 +692,7 @@ def search(
         # (BM25-style) scoring if boosts keep needing tuning.
         if note_kind in ("topic", "report"):
             score *= 2
+        content_rank[path] = _recency_rank(note.meta.get("published", ""))
         hits.append(
             SearchHit(
                 path=path,
@@ -665,7 +701,9 @@ def search(
                 url=note.meta.get("url", ""),
                 snippet=_snippet(note.body, terms),
                 project=note.meta.get("project", ""),
+                published=note.meta.get("published", ""),
+                source_type=note.meta.get("source_type", ""),
             )
         )
-    hits.sort(key=lambda h: (-h.score, h.path.name))
+    hits.sort(key=lambda h: (-h.score, content_rank[h.path], h.path.name))
     return hits[:limit]

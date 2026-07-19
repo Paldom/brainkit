@@ -188,7 +188,9 @@ def main(argv: list[str] | None = None) -> int:
                 citation = f" (research run: {hit.project})"
             else:
                 citation = f" (note: {hit.path.name})"
-            print(f"[{hit.score}] {hit.title}{citation}")
+            date = f" [{hit.published[:10]}]" if hit.published else ""
+            tier = f" ({hit.source_type})" if hit.source_type == "social" else ""
+            print(f"[{hit.score}] {hit.title}{date}{tier}{citation}")
             print(f"    {hit.snippet}")
             print(f"    note: {hit.path}")
         return 0

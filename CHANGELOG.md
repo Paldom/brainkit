@@ -10,6 +10,18 @@ and this project adheres to
 
 ### Added
 
+- Search hits surface their trust tier: source notes found via social queries
+  print a `(social)` marker (user-generated content is the classic poisoning
+  vector), and `content_digest` from researchkit materials passes through to
+  source notes for content lineage across re-downloads.
+
+- Freshness-aware search ranking (deterministic): equal-relevance hits now break
+  ties by content date — `published` from the source material, newest first;
+  undated notes rank last rather than borrowing freshness from their ingest
+  time. Day-ordinal comparison (machine-independent: no local-time
+  `timestamp()`, pre-1970 dates need no special case), and the CLI prints the
+  date next to each hit. Plain recency logic, no LLM judgment, no decay windows.
+
 - Research metadata passthrough (E2E completeness audit, 2026-07-11): source
   notes now carry `source_type`, `content_kind`, `published`, and `final_url`
   from the material frontmatter; on shared-URL merges, fields the newer material

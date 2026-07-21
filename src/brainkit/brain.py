@@ -98,6 +98,18 @@ def _now() -> str:
     return dt.datetime.now(dt.UTC).isoformat(timespec="seconds")
 
 
+def _append_log(brain_dir: Path, event: str) -> None:
+    """Append one line to the brain's ``log.md`` (OKF reserved filename).
+
+    A git-diffable ingest journal: what was written, when, by which run.
+    """
+    log_path = brain_dir / "log.md"
+    if not log_path.exists():
+        log_path.write_text("# Brain log\n\n", encoding="utf-8")
+    with log_path.open("a", encoding="utf-8") as f:
+        f.write(f"- {_now()} {event}\n")
+
+
 def _read_json(path: Path) -> dict[str, object]:
     data = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(data, dict):
@@ -131,6 +143,12 @@ def _source_note_path(sources_dir: Path, url: str, stem: str) -> Path:
         full = hashlib.sha1(url.encode("utf-8")).hexdigest()
         return sources_dir / f"{full}.md"
     return sources_dir / f"{slug}.md"
+
+
+def _corroboration(projects: str) -> str:
+    """Citing-run count derived from the ``projects:`` list — ONE derivation
+    shared by the write and prune paths so the stored field can't drift."""
+    return str(len([p for p in projects.split(",") if p.strip()]))
 
 
 def _merge_topics(existing: str, topic: str) -> str:
@@ -275,6 +293,14 @@ def ingest_research_project(
             "projects": projects_value,
             "providers": note.meta.get("providers", ""),
         }
+        # OKF-queryable description (front-loaded index blurb) and a
+        # DETERMINISTIC corroboration count — the number of research runs
+        # citing this URL (OpenWiki ships confidence labels as prompt policy;
+        # brainkit computes the tier from provenance it already tracks).
+        desc = _description(note.body)
+        if desc:
+            meta["description"] = desc
+        meta["corroboration"] = _corroboration(projects_value)
         # Research metadata passes through: where the content came from and
         # when it was published matters as much as the content itself. On a
         # shared-URL merge, a field the newer material lacks keeps the
@@ -352,6 +378,12 @@ def ingest_research_project(
             )
 
     build_index(brain_dir)
+    _append_log(
+        brain_dir,
+        f"ingest {project_name}: {len(source_notes)} sources, "
+        f"{len(report_notes)} reports, {pruned} pruned, "
+        f"{skipped_materials} skipped",
+    )
     return IngestReport(
         topic=topic,
         topic_note=topic_note,
@@ -398,6 +430,7 @@ def _prune_project_sources(
         if projects:
             meta = dict(note.meta)
             meta["projects"] = ", ".join(projects)
+            meta["corroboration"] = _corroboration(meta["projects"])
             remaining_topics = [
                 topic_by_project[proj] for proj in projects if proj in topic_by_project
             ]

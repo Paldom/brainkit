@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -119,6 +120,19 @@ def build_parser() -> argparse.ArgumentParser:
         help="Only return notes of this type",
     )
 
+    pointer = sub.add_parser(
+        "pointer",
+        help=(
+            "Print a short agent-discovery snippet for AGENTS.md/CLAUDE.md; "
+            "--write appends it to a file (idempotent)"
+        ),
+    )
+    pointer.add_argument(
+        "--write",
+        default=None,
+        metavar="FILE",
+        help="Append the snippet to FILE unless its marker is already present",
+    )
     sub.add_parser("index", help="Regenerate index.md")
     sub.add_parser("list", help="List notes in the brain")
     return parser
@@ -140,6 +154,42 @@ def _print_ingest_report(
             print(f"{indent}  skipped {reason}")
     for sub_report in report.sub_reports:
         _print_ingest_report(sub_report, brain_dir, verbose, indent + "  ")
+
+
+_POINTER_BEGIN = "<!-- brainkit-pointer -->"
+_POINTER_END = "<!-- /brainkit-pointer -->"
+# Full-line anchors: a marker quoted inside prose/code fences must not count.
+_POINTER_BLOCK_RE = re.compile(
+    rf"^{re.escape(_POINTER_BEGIN)}$.*?^{re.escape(_POINTER_END)}$\n?",
+    re.MULTILINE | re.DOTALL,
+)
+
+
+def _pointer_snippet(brain: str) -> str:
+    """The short agent-discovery block for AGENTS.md/CLAUDE.md.
+
+    A pointer, not the brain itself — inlining a whole wiki into an
+    instruction file wastes context on every run; agents that need
+    knowledge follow the pointer and query. The brain path is used AS
+    GIVEN (not resolved): the default `./brain` stays repo-relative and
+    portable in committed files — pass an absolute --brain deliberately.
+    """
+    return (
+        f"{_POINTER_BEGIN}\n"
+        "## Knowledge brain\n"
+        "\n"
+        f"A brainkit brain (cited research notes) lives at `{brain}`.\n"
+        "Before answering research/factual questions in its topics, query it\n"
+        "and prefer cited hits over memory:\n"
+        "\n"
+        "```bash\n"
+        f'brainkit --brain "{brain}" search "<terms>"   # hits cite source URLs\n'
+        "```\n"
+        "\n"
+        f"Browse `{brain}/index.md` for the topic map; every note carries\n"
+        "provenance frontmatter (url, projects, published, corroboration).\n"
+        f"{_POINTER_END}\n"
+    )
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -168,6 +218,26 @@ def main(argv: list[str] | None = None) -> int:
         if args.verbose:
             for reason in skipped:
                 print(f"  skipped {reason}")
+        return 0
+
+    if args.command == "pointer":
+        snippet = _pointer_snippet(args.brain)
+        if args.write:
+            target = Path(args.write)
+            existing = target.read_text(encoding="utf-8") if target.is_file() else ""
+            if _POINTER_BLOCK_RE.search(existing):
+                # Replace, don't skip: a moved brain must not leave a stale
+                # path in the file forever (idempotent AND self-healing).
+                updated = _POINTER_BLOCK_RE.sub(snippet, existing, count=1)
+                verb = "updated in" if updated != existing else "already current in"
+                target.write_text(updated, encoding="utf-8")
+                print(f"Pointer {verb} {target}")
+                return 0
+            joiner = "" if not existing or existing.endswith("\n\n") else "\n"
+            target.write_text(f"{existing}{joiner}{snippet}", encoding="utf-8")
+            print(f"Pointer appended to {target}")
+            return 0
+        print(snippet, end="")
         return 0
 
     if args.command in ("search", "index", "list"):

@@ -10,6 +10,20 @@ and this project adheres to
 
 ### Added
 
+- Agent-discovery pointer: `brainkit pointer [--write FILE]` prints a short
+  marker-fenced snippet for AGENTS.md/CLAUDE.md (brain path + search usage);
+  `--write` appends idempotently and UPDATES the fenced block in place when the
+  brain path changes. The path is used as given, so the default `./brain` stays
+  portable in committed files.
+- Deterministic corroboration: source notes carry `corroboration: <N>` — the
+  count of research runs citing the URL, derived from the `projects:` list by
+  one shared function on both the write and prune paths (no LLM judgment, no
+  drift).
+- OKF alignment: source notes carry a `description:` blurb (the same derivation
+  the index uses), and every ingest appends one line to a root-level `log.md`
+  journal (OKF reserved filename; outside note discovery) — a git-diffable
+  record of what was written when.
+
 - Search hits surface their trust tier: source notes found via social queries
   print a `(social)` marker (user-generated content is the classic poisoning
   vector), and `content_digest` from researchkit materials passes through to

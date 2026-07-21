@@ -900,3 +900,54 @@ def test_prune_recomputes_topics_from_remaining_projects(tmp_path: Path) -> None
     text = source.read_text(encoding="utf-8")
     assert "projects: p2" in text
     assert "topics: topic two" in text  # topic one no longer claimed
+
+
+class TestOkfAndPointer:
+    def test_source_notes_carry_description_and_corroboration(
+        self, tmp_path: Path
+    ) -> None:
+        shared = _material("Shared", "https://c.test/doc", "Common body prose here.")
+        p1 = make_project(tmp_path, "p1", topic="one", materials={"001-s.md": shared})
+        p2 = make_project(tmp_path, "p2", topic="two", materials={"001-s.md": shared})
+        brain = tmp_path / "brain"
+        ingest_research_project(p1, brain)
+        note = next((brain / "notes" / "sources").glob("*.md")).read_text()
+        assert "corroboration: 1" in note
+        assert "description: Common body prose here." in note
+        ingest_research_project(p2, brain)
+        note = next((brain / "notes" / "sources").glob("*.md")).read_text()
+        assert "corroboration: 2" in note  # deterministic: citing-run count
+
+    def test_log_md_journal_appends_per_ingest(self, tmp_path: Path) -> None:
+        brain = tmp_path / "brain"
+        ingest_research_project(make_project(tmp_path, "r1"), brain)
+        ingest_research_project(make_project(tmp_path, "r2"), brain)
+        log = (brain / "log.md").read_text()
+        assert log.startswith("# Brain log")
+        assert log.count("- 20") == 2  # one timestamped line per run
+        assert "ingest r1: 2 sources" in log
+
+    def test_pointer_prints_and_writes_idempotently(
+        self, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        brain = tmp_path / "brain"
+        assert main(["--brain", str(brain), "pointer"]) == 0
+        out = capsys.readouterr().out
+        assert "<!-- brainkit-pointer -->" in out
+        # brain path used AS GIVEN (portable in committed files), not resolved
+        assert "search" in out and str(brain) in out
+
+        agents = tmp_path / "AGENTS.md"
+        agents.write_text("# My project\n", encoding="utf-8")
+        assert main(["--brain", str(brain), "pointer", "--write", str(agents)]) == 0
+        assert main(["--brain", str(brain), "pointer", "--write", str(agents)]) == 0
+        text = agents.read_text(encoding="utf-8")
+        assert text.count("<!-- brainkit-pointer -->") == 1  # idempotent
+        assert text.startswith("# My project")
+        # a moved brain UPDATES the fenced block instead of skipping
+        assert (
+            main(["--brain", "./other-brain", "pointer", "--write", str(agents)]) == 0
+        )
+        text = agents.read_text(encoding="utf-8")
+        assert text.count("<!-- brainkit-pointer -->") == 1
+        assert "./other-brain" in text and str(brain) not in text

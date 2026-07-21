@@ -5,8 +5,8 @@
 # brainkit
 
 A portable, human-readable brain for AI agents: a Git-native markdown wiki as
-the source of truth, an escalating retrieval ladder on top — gated writes, and
-search that cites its sources.
+the source of truth, an escalating retrieval ladder on top, with gated writes
+and search that cites its sources.
 
 [![CI](https://github.com/Paldom/brainkit/actions/workflows/ci.yml/badge.svg)](https://github.com/Paldom/brainkit/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
@@ -14,9 +14,9 @@ search that cites its sources.
 
 ```mermaid
 flowchart LR
-    T(["💡 any topic"]) --> RK["🔍 <b>researchkit</b><br/>8 AI search engines in parallel:<br/>one cited report + archived sources"]
+    T(["💡 any topic"]) --> RK["🔍 <b>researchkit</b><br/>12 AI search providers in parallel:<br/>one cited report + archived sources"]
     RK -- "one-shot:<br/>teach every agent" --> SK["⚡ <b>skillskit</b><br/>research pack in, validated skill out —<br/>installable in 70+ agents via skills.sh"]
-    RK -- "compounding:<br/>grow a memory" --> BK["🧠 <b>brainkit</b><br/>portable hybrid brain (OKF wiki + RAG),<br/>cited answers for agents and harnesses"]
+    RK -- "compounding:<br/>grow a memory" --> BK["🧠 <b>brainkit</b><br/>portable hybrid brain (OKF wiki + retrieval ladder),<br/>cited answers for agents and harnesses"]
     classDef here stroke:#f97316,stroke-width:3px;
     class BK here
 ```
@@ -48,13 +48,13 @@ flowchart LR
     subgraph LADDER["access layer — every rung a rebuildable projection"]
         direction BT
         R0["rung 0 · grep, cat, your editor<br/>shipped"]
-        R1["rung 1 · lexical search<br/>shipped — brainkit search"]
+        R1["rung 1 · lexical + freshness<br/>shipped — brainkit search"]
         R2["rung 2 · embeddings + RRF<br/>designed"]
         R3["rung 3 · typed graph<br/>designed"]
         R0 --> R1 --> R2 --> R3
     end
     BRAIN --> LADDER
-    LADDER -->|cited hits| AGENT["rung 4 · your agent's loop<br/>shipped — Claude Code skill"]
+    LADDER -->|cited hits| AGENT["rung 4 · your agent's loop<br/>shipped — bundled agent skill"]
     classDef shipped fill:#e6f4ea,stroke:#137333,color:#0d652d
     classDef designed fill:#f1f3f4,stroke:#9aa0a6,color:#5f6368,stroke-dasharray: 5 5
     class R0,R1,AGENT shipped
@@ -76,12 +76,13 @@ Solid green rungs are shipped in v0.1.0; dashed rungs are designed and next.
   no anonymous free text quietly becoming truth. (Files stay plain markdown;
   pair with Git review for a hard gate.)
 - **Cited retrieval.** Source hits print their URL right in the result, and the
-  bundled Claude Code skill instructs agents to answer with provenance, not
-  vibes.
+  bundled agent skill (Claude Code via `.claude/skills/`, Codex and other
+  Agent-Skills-standard agents via `.agents/skills/`) instructs agents to answer
+  with provenance, not vibes.
 - **Idempotent ingestion.** Re-ingest freely: a source cited by five research
   runs stays one note that accumulates all five topics.
-- **Zero dependencies.** Pure standard-library Python 3.11+ — `uv sync` and you
-  are running.
+- **Zero runtime dependencies.** Pure standard-library Python 3.11+ — `uv sync`
+  and you are running.
 
 ## Quick start
 
@@ -89,9 +90,9 @@ Not yet on PyPI — run from side-by-side checkouts of the two repos (`uv sync`
 once in each):
 
 ```bash
-git clone https://github.com/Paldom/brainkit && git clone https://github.com/Paldom/researchkit
+git clone https://github.com/Paldom/brainkit && git clone https://github.com/Paldom/researchkit && cd brainkit
 
-# 1. research a topic with materials (researchkit needs provider API keys — see its README)
+# 1. research a topic with materials (researchkit needs provider API keys or logged-in CLI subscriptions — see its README)
 uv run --directory ../researchkit researchkit "your topic" --materials
 
 # 2. ingest the run into a brain
@@ -113,20 +114,25 @@ The brain directory defaults to `$BRAINKIT_DIR` or `./brain`.
 
 ## Commands
 
-| Command                    | What it does                                                                                                                                                             |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `ingest <project>`         | Turn a researchkit run (`result.json` + `materials/`) into one topic note plus deduplicated source notes; a boosted run's `subprojects/` are ingested recursively        |
-| `ingest --include-reports` | Also chunk the report's `##` sections into `type: report` notes — makes materials-thin runs queryable                                                                    |
-| `ingest-notes <path>`      | Ingest arbitrary frontmattered markdown (file or directory): notes with a `url` join the deduplicated sources; other provenance-carrying notes land in `notes/imported/` |
-| `search "q" -n 5`          | Title-weighted lexical search; every hit prints score, title, source URL, snippet, note path. `--kind topic\|source\|report\|note` filters by note type                  |
-| `list`                     | List every note with its type and title                                                                                                                                  |
-| `index`                    | Regenerate `index.md` — the map of topics to their cited sources                                                                                                         |
+| Command                    | What it does                                                                                                                                                                                                                                                                                   |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ingest <project>`         | Turn a researchkit run (`result.json` + `materials/`) into one topic note plus deduplicated source notes; a boosted run's `subprojects/` are ingested recursively                                                                                                                              |
+| `ingest --include-reports` | Also chunk the report's `##` sections into `type: report` notes — makes materials-thin runs queryable                                                                                                                                                                                          |
+| `ingest-notes <path>`      | Ingest arbitrary frontmattered markdown (file or directory): notes with a `url` join the deduplicated sources; other provenance-carrying notes land in `notes/imported/`                                                                                                                       |
+| `search "q" -n 5`          | Title-weighted lexical search with a deterministic content-date tie-break (newest first, undated last); hits print score, title, published date, a `(social)` trust marker for social-sourced notes, source URL, snippet, note path. `--kind topic\|source\|report\|note` filters by note type |
+| `list`                     | List every note with its type and title                                                                                                                                                                                                                                                        |
+| `index`                    | Regenerate `index.md` — the map of topics to their cited sources                                                                                                                                                                                                                               |
+| `pointer [--write FILE]`   | Print (or idempotently append/update in FILE) a short agent-discovery snippet for AGENTS.md/CLAUDE.md: the brain path plus how to query it                                                                                                                                                     |
 
 Pass `-v` to `ingest`/`ingest-notes` to see why any file was skipped (e.g.
 `skipped materials/003-….md: no 'url' in frontmatter`). Relative project paths
 are resolved against your shell's `$PWD` when the process cwd differs (the
 `uv run --directory` case), and errors print the exact absolute path that was
 tried.
+
+Source notes carry deterministic provenance frontmatter — `url`, `published`,
+`content_digest`, and a `corroboration` count (how many research runs cite the
+URL) — and every ingest appends one line to the brain's `log.md` journal.
 
 ## More than a wiki: the retrieval ladder
 
@@ -182,10 +188,11 @@ brainkit deliberately combines three lineages:
 
 ## Works with your agent
 
-A Claude Code skill ships in `.claude/skills/brainkit`: search first, read the
-top notes, and always cite the `url` from the note's frontmatter. If the brain
-has nothing relevant, the skill says so and points at researchkit — the brain
-exists to give provenance, not vibes.
+An agent skill ships in `.claude/skills/brainkit` (Codex and other
+Agent-Skills-standard agents discover it via `.agents/skills/`): search first,
+read the top notes, and always cite the `url` from the note's frontmatter. If
+the brain has nothing relevant, the skill says so and points at researchkit —
+the brain exists to give provenance, not vibes.
 
 ## Honest edges
 

@@ -10,6 +10,11 @@ and this project adheres to
 
 ### Added
 
+- Codex support at Claude-Code parity: the brainkit skill is discoverable by
+  Codex and other Agent-Skills-standard agents via an `.agents/skills/` symlink
+  (source of truth stays `.claude/skills/`); AGENTS.md remains the shared
+  instruction file.
+
 - Agent-discovery pointer: `brainkit pointer [--write FILE]` prints a short
   marker-fenced snippet for AGENTS.md/CLAUDE.md (brain path + search usage);
   `--write` appends idempotently and UPDATES the fenced block in place when the

@@ -222,3 +222,6 @@ brain/
 
 # cross-validation reports (session artifacts; not committed)
 .claude/curator-reports/
+
+# local scratch (never committed)
+.local/

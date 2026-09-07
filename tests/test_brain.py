@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 import pytest
+from conftest import notes_in
 
+from brainkit import parse_note
 from brainkit.brain import (
     IngestReport,
     build_index,
@@ -66,18 +69,25 @@ class TestIngest:
         assert report.skipped_sources == 0
 
         topic_text = report.topic_note.read_text(encoding="utf-8")
-        assert "type: topic" in topic_text
+        assert parse_note(topic_text).meta["type"] == "topic"
         assert "Agents are eating software" in topic_text
         assert "[[" in topic_text  # wiki links to sources
 
-        source_text = report.source_notes[0].read_text(encoding="utf-8")
-        assert "type: source" in source_text
-        assert "url: https://" in source_text
-        assert "topics: ai agents" in source_text
+        source_meta = parse_note(
+            report.source_notes[0].read_text(encoding="utf-8")
+        ).meta
+        assert source_meta["type"] == "source"
+        assert source_meta["url"].startswith("https://")
+        assert json.loads(source_meta["topics"]) == ["ai agents"]
 
+        # the root index is the map: levels and their notes, no source dump
         index = (brain / "index.md").read_text(encoding="utf-8")
-        assert "## ai agents" in index
-        assert "https://arxiv.test/abs/1" in index
+        assert "## Topics" in index
+        assert "ai agents" in index
+        assert "https://arxiv.test/abs/1" not in index  # sources live one hop down
+        sources_index = (brain / "notes" / "sources" / "index.md").read_text()
+        assert "https://arxiv.test/abs/1" not in sources_index  # links are paths
+        assert "Agent safety paper" in sources_index
 
     def test_reingest_is_idempotent(self, tmp_path: Path) -> None:
         project = make_project(tmp_path)
@@ -87,7 +97,7 @@ class TestIngest:
         assert [p.name for p in first.source_notes] == [
             p.name for p in second.source_notes
         ]
-        sources = list((brain / "notes" / "sources").glob("*.md"))
+        sources = notes_in(brain / "notes" / "sources")
         assert len(sources) == 2
 
     def test_shared_source_accumulates_topics(self, tmp_path: Path) -> None:
@@ -104,13 +114,14 @@ class TestIngest:
         ingest_research_project(p1, brain)
         ingest_research_project(p2, brain)
 
-        sources = list((brain / "notes" / "sources").glob("*.md"))
+        sources = notes_in(brain / "notes" / "sources")
         assert len(sources) == 1  # same URL -> one note
-        text = sources[0].read_text(encoding="utf-8")
-        assert "topics: topic one, topic two" in text
+        meta = parse_note(sources[0].read_text(encoding="utf-8")).meta
+        assert json.loads(meta["topics"]) == ["topic one", "topic two"]
 
-        index = (brain / "index.md").read_text(encoding="utf-8")
-        assert index.count("https://shared.test/doc") == 2  # listed under both topics
+        # one note, listed once, claimed by both topics via its frontmatter
+        sources_index = (brain / "notes" / "sources" / "index.md").read_text()
+        assert sources_index.count("Shared doc") == 1
 
     def test_material_without_url_or_body_is_skipped(self, tmp_path: Path) -> None:
         materials = {
@@ -153,13 +164,13 @@ class TestIngest:
 class TestIndexAndSearch:
     def test_index_on_empty_brain(self, tmp_path: Path) -> None:
         index = build_index(tmp_path / "brain")
-        assert "0 topics · 0 sources" in index.read_text(encoding="utf-8")
+        assert "0 domains · 0 topics" in index.read_text(encoding="utf-8")
 
     def test_index_describes_each_source(self, tmp_path: Path) -> None:
         project = make_project(tmp_path)
         brain = tmp_path / "brain"
         ingest_research_project(project, brain)
-        index = (brain / "index.md").read_text(encoding="utf-8")
+        index = (brain / "notes" / "sources" / "index.md").read_text(encoding="utf-8")
         assert "— Reddit says agents rock." in index
         assert "— Formal analysis of agent runtime safety" in index
 
@@ -180,13 +191,15 @@ class TestIndexAndSearch:
         project = make_project(tmp_path, materials=materials)
         brain = tmp_path / "brain"
         ingest_research_project(project, brain)
-        index = (brain / "index.md").read_text(encoding="utf-8")
-        noisy_line = next(line for line in index.splitlines() if "n.test/1" in line)
+        index = (brain / "notes" / "sources" / "index.md").read_text(encoding="utf-8")
+        noisy_line = next(line for line in index.splitlines() if "Noisy page" in line)
         assert "Page heading" not in noisy_line
         assert "![banner]" not in noisy_line
         assert "— word word" in noisy_line
         assert noisy_line.endswith("…")
-        heading_only = next(line for line in index.splitlines() if "n.test/2" in line)
+        heading_only = next(
+            line for line in index.splitlines() if "Heading only" in line
+        )
         assert "—" not in heading_only  # no prose -> no description
 
     def test_search_ranks_and_cites(self, tmp_path: Path) -> None:
@@ -339,10 +352,10 @@ class TestSlugDrift:
         ingest_research_project(p1, brain)
         ingest_research_project(p2, brain)
 
-        sources = list((brain / "notes" / "sources").glob("*.md"))
+        sources = notes_in(brain / "notes" / "sources")
         assert len(sources) == 1
         text = sources[0].read_text(encoding="utf-8")
-        assert "topics: t one, t two" in text
+        assert json.loads(parse_note(text).meta["topics"]) == ["t one", "t two"]
 
     def test_digest_prefix_collision_falls_back_to_full_digest(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
@@ -458,7 +471,7 @@ class TestReingestReconciliation:
         second = ingest_research_project(project, brain)
         assert len(second.source_notes) == 1
         assert second.pruned_sources == 1
-        remaining = [p.name for p in (brain / "notes" / "sources").glob("*.md")]
+        remaining = [p.name for p in notes_in(brain / "notes" / "sources")]
         assert len(remaining) == 1
         assert "reddit" in remaining[0]
 
@@ -476,10 +489,10 @@ class TestReingestReconciliation:
         (p1 / "materials" / "001-a.md").unlink()
         report = ingest_research_project(p1, brain)
         assert report.pruned_sources == 0  # p2 still cites it
-        sources = list((brain / "notes" / "sources").glob("*.md"))
+        sources = notes_in(brain / "notes" / "sources")
         assert len(sources) == 1
         text = sources[0].read_text(encoding="utf-8")
-        assert "projects: p2" in text
+        assert json.loads(parse_note(text).meta["projects"]) == ["p2"]
 
 
 class TestMetadataPassthrough:
@@ -494,10 +507,11 @@ class TestMetadataPassthrough:
         project = make_project(tmp_path, materials=materials)
         report = ingest_research_project(project, tmp_path / "brain")
         text = report.source_notes[0].read_text(encoding="utf-8")
-        assert "source_type: social" in text
-        assert "content_kind: transcript" in text
-        assert "published: 2026-06-01" in text
-        assert "final_url: https://m.test/1?x" in text
+        meta = parse_note(text).meta
+        assert meta["source_type"] == "social"
+        assert meta["content_kind"] == "transcript"
+        assert meta["published"] == "2026-06-01"
+        assert meta["final_url"] == "https://m.test/1?x"
 
 
 class TestBoostedIngest:
@@ -546,7 +560,7 @@ class TestBoostedIngest:
             "orchestration",
         }
         # both subs' sources landed in the brain
-        sources = list((brain / "notes" / "sources").glob("*.md"))
+        sources = notes_in(brain / "notes" / "sources")
         assert len(sources) == 2
 
     def test_unrun_subproject_is_reported_not_fatal(self, tmp_path: Path) -> None:
@@ -573,7 +587,7 @@ class TestBoostedIngest:
         report = ingest_research_project(parent, brain, include_reports=True)
         assert report.report_notes  # parent super-summary sections
         assert report.sub_reports[0].report_notes
-        notes = {p.name for p in (brain / "notes" / "reports").glob("*.md")}
+        notes = {p.name for p in notes_in(brain / "notes" / "reports")}
         assert any("key-findings" in n for n in notes)
         assert not any("sources" in n for n in notes)  # stub section skipped
         # report chunks are searchable and cite the run (identity is
@@ -591,7 +605,7 @@ class TestBoostedIngest:
         brain = tmp_path / "brain"
         ingest_research_project(project, brain, include_reports=True)
         ingest_research_project(project, brain, include_reports=True)
-        assert len(list((brain / "notes" / "reports").glob("*.md"))) == 1
+        assert len(notes_in(brain / "notes" / "reports")) == 1
 
 
 class TestBoostedReingestIdentity:
@@ -619,10 +633,12 @@ class TestBoostedReingestIdentity:
             boosted("20260708_run", "https://b.test/2"), brain
         )
         assert second.sub_reports[0].pruned_sources == 0
-        sources = list((brain / "notes" / "sources").glob("*.md"))
+        sources = notes_in(brain / "notes" / "sources")
         assert len(sources) == 2  # run 1's source survived run 2's ingest
-        topics = list((brain / "notes" / "topics").glob("*.md"))
-        assert len(topics) == 4  # 2 parents + 2 distinct sub topic notes
+        # each boosted parent is a DOMAIN; its sub-projects are its topics
+        assert len(notes_in(brain / "notes" / "domains")) == 2
+        topics = notes_in(brain / "notes" / "topics")
+        assert len(topics) == 2  # 2 distinct sub topic notes, one per run
 
 
 class TestReportChunker:
@@ -636,7 +652,7 @@ class TestReportChunker:
         brain = tmp_path / "brain"
         report = ingest_research_project(project, brain, include_reports=True)
         assert len(report.report_notes) == 2
-        names = sorted(p.name for p in (brain / "notes" / "reports").glob("*.md"))
+        names = sorted(p.name for p in notes_in(brain / "notes" / "reports"))
         assert len(names) == 2 and any(n.endswith("-2.md") for n in names)
         bodies = [
             (brain / "notes" / "reports" / n).read_text(encoding="utf-8") for n in names
@@ -684,7 +700,7 @@ class TestReportPrefixCollision:
         brain = tmp_path / "brain"
         report = ingest_research_project(parent, brain, include_reports=True)
         written = sum(len(r.report_notes) for r in report.sub_reports)
-        on_disk = len(list((brain / "notes" / "reports").glob("*.md")))
+        on_disk = len(notes_in(brain / "notes" / "reports"))
         assert written == 2
         assert on_disk == written  # nothing pruned by a sibling
 
@@ -765,7 +781,7 @@ class TestIngestNotes:
         )
         written, skipped = ingest_notes(extra, brain)
         assert len(written) == 2 and not skipped
-        sources = list((brain / "notes" / "sources").glob("*.md"))
+        sources = notes_in(brain / "notes" / "sources")
         assert len(sources) == 3  # 2 from project + 1 fresh; shared URL merged
         merged = next(p for p in sources if "reddit" in p.read_text(encoding="utf-8"))
         assert "hand notes" in merged.read_text(encoding="utf-8")
@@ -863,13 +879,13 @@ class TestSameTopicProjects:
         r2 = ingest_research_project(p2, brain)
         assert r1.topic_note != r2.topic_note
 
+        # both runs are listed as separate topics, not merged into one
         index = (brain / "index.md").read_text(encoding="utf-8")
-        assert "## same topic (run1)" in index
-        assert "## same topic (run2)" in index
-        # each run's section lists only its own source
-        run1_section = index.split("## same topic (run1)")[1].split("## ")[0]
-        assert "https://a.test/1" in run1_section
-        assert "https://b.test/2" not in run1_section
+        assert index.count("same topic") == 2
+        # and each run's topic note lists only its own source
+        assert "https://a.test/1" not in index  # sources are one hop down
+        run1 = r1.topic_note.read_text(encoding="utf-8")
+        assert "Doc A" in run1 and "Doc B" not in run1
 
 
 def test_slug_collision_projects_keep_separate_topic_notes(tmp_path: Path) -> None:
@@ -882,7 +898,7 @@ def test_slug_collision_projects_keep_separate_topic_notes(tmp_path: Path) -> No
     r1 = ingest_research_project(p1, brain)
     r2 = ingest_research_project(p2, brain)
     assert r1.topic_note != r2.topic_note
-    assert len(list((brain / "notes" / "topics").glob("*.md"))) == 2
+    assert len(notes_in(brain / "notes" / "topics")) == 2
 
 
 def test_prune_recomputes_topics_from_remaining_projects(tmp_path: Path) -> None:
@@ -896,10 +912,11 @@ def test_prune_recomputes_topics_from_remaining_projects(tmp_path: Path) -> None
     (p1 / "materials" / "001-a.md").unlink()
     ingest_research_project(p1, brain)
 
-    source = next((brain / "notes" / "sources").glob("*.md"))
+    source = notes_in(brain / "notes" / "sources")[0]
     text = source.read_text(encoding="utf-8")
-    assert "projects: p2" in text
-    assert "topics: topic two" in text  # topic one no longer claimed
+    meta = parse_note(text).meta
+    assert json.loads(meta["projects"]) == ["p2"]
+    assert json.loads(meta["topics"]) == ["topic two"]  # topic one dropped
 
 
 class TestOkfAndPointer:
@@ -911,21 +928,47 @@ class TestOkfAndPointer:
         p2 = make_project(tmp_path, "p2", topic="two", materials={"001-s.md": shared})
         brain = tmp_path / "brain"
         ingest_research_project(p1, brain)
-        note = next((brain / "notes" / "sources").glob("*.md")).read_text()
-        assert "corroboration: 1" in note
-        assert "description: Common body prose here." in note
+        note = notes_in(brain / "notes" / "sources")[0].read_text()
+        meta = parse_note(note).meta
+        assert meta["corroboration"] == "1"
+        assert meta["description"] == "Common body prose here."
         ingest_research_project(p2, brain)
-        note = next((brain / "notes" / "sources").glob("*.md")).read_text()
-        assert "corroboration: 2" in note  # deterministic: citing-run count
+        note = notes_in(brain / "notes" / "sources")[0].read_text()
+        # deterministic: citing-run count
+        assert parse_note(note).meta["corroboration"] == "2"
 
-    def test_log_md_journal_appends_per_ingest(self, tmp_path: Path) -> None:
+    def test_log_md_journal_is_date_grouped_newest_first(self, tmp_path: Path) -> None:
+        """OKF §9: ``## YYYY-MM-DD`` headings, newest first, bold-kind entries."""
         brain = tmp_path / "brain"
         ingest_research_project(make_project(tmp_path, "r1"), brain)
         ingest_research_project(make_project(tmp_path, "r2"), brain)
         log = (brain / "log.md").read_text()
         assert log.startswith("# Brain log")
-        assert log.count("- 20") == 2  # one timestamped line per run
-        assert "ingest r1: 2 sources" in log
+        dates = re.findall(r"^## (\d{4}-\d{2}-\d{2})$", log, re.MULTILINE)
+        assert len(dates) == 1  # both runs land under today's heading
+        assert log.count("* **Ingest**: ") == 2
+        assert "`r1` — 2 sources" in log
+        # newest first, within the day as well as across days
+        assert log.index("`r2`") < log.index("`r1`")
+
+    def test_log_md_opens_a_new_section_per_day(self, tmp_path: Path) -> None:
+        brain = tmp_path / "brain"
+        brain.mkdir()
+        (brain / "log.md").write_text(
+            "# Brain log\n\n## 2020-01-01\n\n* **Ingest**: ancient\n", encoding="utf-8"
+        )
+        ingest_research_project(make_project(tmp_path, "r1"), brain)
+        log = (brain / "log.md").read_text()
+        dates = re.findall(r"^## (\d{4}-\d{2}-\d{2})$", log, re.MULTILINE)
+        assert len(dates) == 2 and dates[1] == "2020-01-01"  # today first
+        assert "ancient" in log  # history is never dropped
+
+    def test_log_md_repairs_a_missing_title(self, tmp_path: Path) -> None:
+        brain = tmp_path / "brain"
+        brain.mkdir()
+        (brain / "log.md").write_text("garbage\n", encoding="utf-8")
+        ingest_research_project(make_project(tmp_path, "r1"), brain)
+        assert (brain / "log.md").read_text().startswith("# Brain log")
 
     def test_pointer_prints_and_writes_idempotently(
         self, tmp_path: Path, capsys: pytest.CaptureFixture[str]
@@ -951,3 +994,118 @@ class TestOkfAndPointer:
         text = agents.read_text(encoding="utf-8")
         assert text.count("<!-- brainkit-pointer -->") == 1
         assert "./other-brain" in text and str(brain) not in text
+
+
+class TestReportBand:
+    """Report chunking covers the analysis band only (backlog 0.4)."""
+
+    def _project_with_report(self, tmp_path: Path, name: str = "r1") -> Path:
+        project = make_project(tmp_path, name)
+        (project / "report.md").write_text(
+            "# Research Report\n\nlead-in prose that is comfortably long enough\n\n"
+            "## Executive Summary\n\n" + "real synthesis. " * 10 + "\n\n"
+            "## Takeaways\n\n" + "what to do about it. " * 10 + "\n\n"
+            "## Provider Summaries\n\n" + "raw dump. " * 10 + "\n\n"
+            "### Brave\n\n" + "more dump. " * 10 + "\n\n"
+            "## Raw Provider Outputs\n\n" + "even more dump. " * 10 + "\n",
+            encoding="utf-8",
+        )
+        return project
+
+    def test_reports_are_ingested_by_default(self, tmp_path: Path) -> None:
+        brain = tmp_path / "brain"
+        report = ingest_research_project(self._project_with_report(tmp_path), brain)
+        assert report.report_notes  # no --include-reports needed any more
+
+    def test_chunking_stops_at_the_first_raw_heading(self, tmp_path: Path) -> None:
+        brain = tmp_path / "brain"
+        report = ingest_research_project(self._project_with_report(tmp_path), brain)
+        titles = [
+            parse_note(p.read_text(encoding="utf-8")).title for p in report.report_notes
+        ]
+        assert any("Executive Summary" in t for t in titles)
+        assert any("Takeaways" in t for t in titles)
+        assert any("Overview" in t for t in titles)  # pre-heading lead-in
+        assert not any("Provider Summaries" in t for t in titles)
+        assert not any("Raw Provider Outputs" in t for t in titles)
+        # the stop is a hard cut: nothing below the boundary leaks through
+        bodies = " ".join(p.read_text(encoding="utf-8") for p in report.report_notes)
+        assert "raw dump" not in bodies and "more dump" not in bodies
+
+    def test_opt_out_still_works(self, tmp_path: Path) -> None:
+        brain = tmp_path / "brain"
+        report = ingest_research_project(
+            self._project_with_report(tmp_path), brain, include_reports=False
+        )
+        assert report.report_notes == []
+
+    def test_cli_no_include_reports_flag(
+        self, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        brain = tmp_path / "brain"
+        project = self._project_with_report(tmp_path)
+        assert (
+            main(
+                [
+                    "--brain",
+                    str(brain),
+                    "ingest",
+                    str(project),
+                    "--no-include-reports",
+                ]
+            )
+            == 0
+        )
+        capsys.readouterr()
+        assert not (brain / "notes" / "reports").exists()
+
+
+class TestOkfFrontmatterFields:
+    """tags / description / generated (backlog 0.5, 1.2)."""
+
+    def _run(self, tmp_path: Path) -> Path:
+        project = make_project(tmp_path)
+        (project / "result.json").write_text(
+            json.dumps(
+                {
+                    "topic": "ai agents",
+                    "meta_summary": "Agents are eating software everywhere.",
+                    "synthesized_keywords": ["agent memory", "Agent Memory", "  "],
+                    "keywords": ["self-hosted brains", "agent memory"],
+                }
+            ),
+            encoding="utf-8",
+        )
+        brain = tmp_path / "brain"
+        ingest_research_project(project, brain)
+        return brain
+
+    def test_topic_note_carries_tags_from_keywords(self, tmp_path: Path) -> None:
+        brain = self._run(tmp_path)
+        note = notes_in(brain / "notes" / "topics")[0].read_text()
+        # deduplicated case-insensitively, blanks dropped, order preserved
+        assert json.loads(parse_note(note).meta["tags"]) == [
+            "agent memory",
+            "self-hosted brains",
+        ]
+
+    def test_topic_note_carries_description(self, tmp_path: Path) -> None:
+        brain = self._run(tmp_path)
+        meta = parse_note(notes_in(brain / "notes" / "topics")[0].read_text()).meta
+        assert meta["description"] == "Agents are eating software everywhere."
+
+    def test_generated_records_actor_and_time(self, tmp_path: Path) -> None:
+        brain = self._run(tmp_path)
+        for sub in ("topics", "sources"):
+            note = notes_in(brain / "notes" / sub)[0].read_text()
+            generated = json.loads(parse_note(note).meta["generated"])
+            assert generated["by"].startswith("brainkit/")
+            assert generated["at"]
+            assert "ingested_at" not in parse_note(note).meta  # OKF §13.1
+
+    def test_no_tags_key_when_the_run_has_no_keywords(self, tmp_path: Path) -> None:
+        brain = tmp_path / "brain"
+        ingest_research_project(make_project(tmp_path), brain)
+        note = notes_in(brain / "notes" / "topics")[0].read_text()
+        # absent, not empty — OKF fields are optional
+        assert "tags" not in parse_note(note).meta

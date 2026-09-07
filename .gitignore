@@ -225,3 +225,6 @@ brain/
 
 # local scratch (never committed)
 .local/
+
+# macOS Finder metadata (recreated constantly; never meaningful in a diff)
+.DS_Store

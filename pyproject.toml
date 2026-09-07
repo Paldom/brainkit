@@ -30,7 +30,7 @@ Repository = "https://github.com/Paldom/brainkit"
 brainkit = "brainkit.cli:main"
 
 [build-system]
-requires = ["hatchling>=1.27"]
+requires = ["hatchling>=1.31.0"]
 build-backend = "hatchling.build"
 
 [tool.uv]

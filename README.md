@@ -92,26 +92,33 @@ a map to a primary source instead of searching blind.
 
 ## Quick start
 
-Not yet on PyPI — run from side-by-side checkouts of the two repos (`uv sync`
-once in each):
+```bash
+uv tool install brainkit     # or: pipx install brainkit / pip install brainkit
+```
+
+[researchkit](https://github.com/Paldom/researchkit) is a separate tool and is
+not on PyPI yet — clone it alongside if you want it to feed the brain:
 
 ```bash
-git clone https://github.com/Paldom/brainkit && git clone https://github.com/Paldom/researchkit && cd brainkit
-
 # 1. research a topic with materials (researchkit needs provider API keys or logged-in CLI subscriptions — see its README)
-uv run --directory ../researchkit researchkit "your topic" --materials
+git clone https://github.com/Paldom/researchkit
+uv run --directory researchkit researchkit "your topic" --materials
 
-# 2. ingest the run into a brain
-uv run brainkit --brain brain ingest ../researchkit/projects/<run>
+# 2. ingest the run into a brain — a boosted run's sub-projects come too
+brainkit --brain brain ingest "$PWD/researchkit/projects/<run>"
 
 # 3. query it
-uv run brainkit --brain brain search "your question" -n 5
+brainkit --brain brain search "your question" -n 5
+brainkit --brain brain context "your question"   # + descent path and coverage gaps
 ```
 
-Expected result — ranked hits, each citing its source:
+Expected result — ranked hits, each carrying its level and its citation:
 
 ```
-[12] Some source title <https://example.com/article>
+[topic 34.8] Self-hosting in practice… (research run: 20260828_221435_…/sub_04_…)
+    Practitioners are increasingly rallying around "own your memory, rent…
+    note: brain/notes/topics/self-hosting-in-practice--20260828-221435-…md
+[source 25.0] Rent the Intelligence. Own the Memory. <https://nowledge-labs.ai/blog/…>
     ...the matching snippet from the note body...
     note: brain/notes/sources/1a2b3c4d-some-source-title.md
 ```

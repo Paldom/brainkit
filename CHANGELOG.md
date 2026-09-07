@@ -8,6 +8,156 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-09-07
+
+The brain becomes a pyramid. Notes now sit at four levels — domain, topic,
+report, source — with an index at each, so an agent descends from a map to a
+primary source instead of searching a flat namespace. Bundles are Open Knowledge
+Format v0.2 conformant, verified with an external validator, and re-ingesting a
+research run is inert down to the byte.
+
+Existing brains keep working; run `brainkit rebuild` once to migrate their
+frontmatter and regenerate the indexes.
+
+### Added
+
+- **The brain is a pyramid.** A boosted researchkit run already contains a
+  hierarchy — a parent over sub-projects — and ingest used to flatten it into
+  sibling topic notes. The parent now becomes a `domain` note (`notes/domains/`)
+  linking down to its topics, each topic carries a `parent`, and report sections
+  are linked from the topic that produced them. Four levels: domain → topic →
+  report → source.
+
+- `brainkit context "query"` — the same ranked hits as `search`, plus the
+  descent path to each and mechanical **coverage signals**: which query terms
+  appear nowhere in the brain, how many research runs are represented, whether
+  any primary source matched, how many hits are social-tier. Deliberately not
+  called `think`: these are retrieval gaps, and brainkit has no model with which
+  to claim anything about knowledge gaps.
+
+- `brainkit lint` — read-only integrity check (dead links, unreachable notes,
+  duplicate URLs, drifted `corroboration`, bad dates, case-folding path
+  collisions, a stale index) with `--as-of DATE` so a CI run is reproducible and
+  cannot turn red without a commit. Staleness and index size are _warnings_ and
+  do not fail the gate; `--warnings-as-errors` opts in.
+
+- `brainkit rebuild` — re-derives what brainkit owns (frontmatter encoding,
+  `corroboration`, every index) and rewrites only what changes. Separate from
+  `lint` so lint keeps a read-only contract. This is the migration path for
+  brains written by an older version.
+
+- OKF v0.2 conformance: an `index.md` at every level (§8 progressive
+  disclosure), `okf_version` in the bundle-root index (§12), date-grouped
+  `log.md` (§9), `generated: {by, at}` actors (§5.2, superseding `ingested_at`),
+  `tags` from the run's research keywords (§4.1), and `description` on every
+  synthesized note. Verified against an external OKF validator.
+
+- A resolved wiki-link graph: `[[slug]]` links have been written into topic
+  notes since v0.1 and never read back. `link_graph()` now resolves them into
+  edges and backlinks, and lint uses them for dead-link and reachability checks.
+  Body links are read only from notes brainkit or a human authored — a scraped
+  article _about_ wikis quotes `[[note-name]]` as an example, which invented 94
+  dead links on a real corpus. Any note may instead carry an explicit `related`
+  list, which is how a report section or an annotated source gets a real edge.
+
+- A material that is not valid UTF-8 no longer aborts the whole ingest. One bad
+  byte in one scraped page used to lose every source in the run, with an error
+  that did not even name the file; undecodable bytes are now replaced and the
+  repair is reported in `IngestReport.repaired_sources`.
+
+### Changed
+
+- **Frontmatter values are JSON-encoded.** They are now always parseable YAML —
+  46% of the notes in a real 87-note brain previously failed `yaml.safe_load`,
+  every case a title containing `": "`, because values were emitted unquoted.
+  Encoding also removes YAML's implicit-type traps, which quoting-only-when-
+  necessary does not: left plain, a title of `007` loads as the integer 7,
+  `12:00:00` as 43200 and `2026-01-01` as a date, and which of those fire varies
+  between YAML 1.1 and 1.2 consumers. Structure is preserved — `tags` stays a
+  list, `generated` stays a mapping. Run `brainkit rebuild` to migrate.
+
+- **`index.md` is a map, not a listing.** It carries domains and topics and
+  links to each level's own index; it no longer inlines every source under every
+  topic. That listing measured 17.9 KB at 4 topics and 83 sources, which
+  extrapolates past 450 KB at a hundred topics — an artifact no agent can afford
+  to load, describing a brain it is meant to make navigable. The same corpus now
+  produces a 2.7 KB root index at 1185 sources.
+
+- Ranking is BM25 with per-level length normalization plus a level prior
+  (domain > topic > report > source), replacing raw term frequency with a flat
+  2x kind boost. The generated `## Topics`/`## Sources` link lists are excluded
+  from scoring, so a domain note no longer inherits the vocabulary of everything
+  beneath it. Ties break on query coverage, then level, then content date. The
+  constants are BM25 defaults and the prior keeps the old 2x ceiling — untuned,
+  because there is no eval set yet.
+
+- Report sections are ingested by default (`--no-include-reports` opts out), and
+  chunking stops at the first raw-archive heading, so the analysis becomes notes
+  and the per-provider dumps — which outnumber it roughly 4:1 — do not.
+
+- `search` hits carry their level and their parent; the CLI prints the level
+  next to the score, because an agent should decide from a reason rather than a
+  bare number.
+
+### Fixed
+
+- **`rebuild` could destroy a value.** It reconstructed frontmatter from
+  `Note.meta`, a flat string mapping that cannot distinguish a value written as
+  the JSON string `"null"` from one written as the literal `null` — so a title
+  of "null" became an actual null, and "25" became a number. Rewrites now work
+  from the raw frontmatter text via `raw_frontmatter()`.
+
+- A frontmatter key containing a colon was written correctly and then read back
+  wrong, because the reader partitioned on the first colon. Quoted keys are now
+  scanned before the split.
+
+- A leading byte-order mark made a note's entire frontmatter invisible.
+
+- `## Report sections` was not excluded from scoring, so a topic note inherited
+  the vocabulary of the sections it links to — the same defect already fixed for
+  `## Topics` and `## Sources`, missed when the section was added.
+
+- Lone surrogates (which cannot be encoded as UTF-8 at all, and so aborted the
+  write) and the U+FFFE/U+FFFF non-characters are now escaped alongside DEL and
+  the C1 block. Whitespace is collapsed inside list and map values too, not only
+  in top-level strings.
+
+- **A source note's body could end up wearing provenance it did not come from.**
+  When two runs archive one URL the fuller capture wins, but the note merged
+  _every_ citing run's attribution onto it — so pruning the run that supplied
+  the body left the body behind, credited to runs that never fetched it. The
+  supplying run is now recorded as `content_from`, and `lint` reports
+  `orphaned-content` when it stops citing the note.
+
+- **`topics` and `projects` grew without bound on every re-ingest.** They were
+  stored comma-joined and split on `,`, but a researchkit topic is a sentence
+  and most contain commas, so the stored value could not be split back into the
+  items that went in and the whole topic was appended again each run. Both are
+  now JSON lists.
+
+- **Re-ingesting identical input is now inert down to the byte.** It used to
+  rewrite every note: `generated.at` always moved, and for a URL archived by two
+  sub-projects the note's title, body, `providers` and metadata oscillated
+  between the two archives on every run. A note is now left untouched when only
+  its timestamp would change, `providers` is a union, and the fuller archive
+  wins deterministically.
+
+- Report notes were deleted before being rewritten, which defeated the unchanged
+  check; stale sections are now removed after the write instead.
+
+- `_description` skipped a heading and its first sentence together when they
+  were separated by a single newline — which is exactly how researchkit writes
+  `## Executive Summary` — and then settled on a `---` rule as the description.
+
+- Frontmatter no longer emits DEL or C1 control characters literally. `json`
+  leaves them as-is and YAML 1.2 §5.1 excludes them, so mojibake from one
+  mis-decoded scraped page was enough to make a note unparseable.
+
+- Index links resolve from the file that contains them; per-level indexes
+  previously emitted bundle-root-relative paths that resolved nowhere.
+
+## [0.1.0] - 2026-07-22
+
 ### Added
 
 - Codex support at Claude-Code parity: the brainkit skill is discoverable by
@@ -103,3 +253,7 @@ and this project adheres to
 - `slugify`: unicode-folding kebab-case slugs.
 - Full toolchain: uv packaging, ruff, strict mypy, pytest with branch coverage,
   pre-commit, CI quality gate, and release automation.
+
+[unreleased]: https://github.com/Paldom/brainkit/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/Paldom/brainkit/releases/tag/v0.2.0
+[0.1.0]: https://github.com/Paldom/brainkit/tree/045c19d

@@ -33,7 +33,7 @@ notes, topic notes, and a generated index that agents and teammates both read.
 without a database, a SaaS, or a vector store they can't inspect. **Why:**
 knowledge you can't diff, review, grep, or delete isn't knowledge you can trust
 — so everything is plain text in Git, writes are gated, and hits cite their
-sources. Status: alpha (v0.1.0); interfaces may move, but your data stays
+sources. Status: alpha (v0.2.0); interfaces may move, but your data stays
 readable plain markdown even if they do.
 
 ```mermaid
@@ -41,27 +41,33 @@ flowchart LR
     RK["researchkit run<br/>result.json + materials/"] -->|brainkit ingest| BRAIN
     subgraph BRAIN["brain/ — plain markdown, in Git (source of truth)"]
         direction TB
+        D["notes/domains/*.md<br/>the map over a boosted run"]
         T["notes/topics/*.md<br/>one per research run"]
+        P["notes/reports/*.md<br/>one per analysis section"]
         S["notes/sources/*.md<br/>one per URL, deduped"]
-        T -.->|wiki-links| S
+        D -.->|wiki-links| T -.-> P
+        T -.-> S
     end
     subgraph LADDER["access layer — every rung a rebuildable projection"]
         direction BT
         R0["rung 0 · grep, cat, your editor<br/>shipped"]
-        R1["rung 1 · lexical + freshness<br/>shipped — brainkit search"]
+        R1["rung 1 · BM25 + level prior<br/>shipped — search / context"]
         R2["rung 2 · embeddings + RRF<br/>designed"]
-        R3["rung 3 · typed graph<br/>designed"]
+        R3["rung 3 · typed graph<br/>partly shipped — wiki-link graph"]
         R0 --> R1 --> R2 --> R3
     end
     BRAIN --> LADDER
     LADDER -->|cited hits| AGENT["rung 4 · your agent's loop<br/>shipped — bundled agent skill"]
     classDef shipped fill:#e6f4ea,stroke:#137333,color:#0d652d
     classDef designed fill:#f1f3f4,stroke:#9aa0a6,color:#5f6368,stroke-dasharray: 5 5
-    class R0,R1,AGENT shipped
-    class R2,R3 designed
+    class R0,R1,R3,AGENT shipped
+    class R2 designed
 ```
 
-Solid green rungs are shipped in v0.1.0; dashed rungs are designed and next.
+Solid green rungs are shipped; the dashed rung is designed and next. The bundle
+is a **pyramid**: a domain note summarizes its topics, a topic note cites its
+sources, and every level carries its own `index.md` so an agent can descend from
+a map to a primary source instead of searching blind.
 
 ## Why brainkit
 
@@ -114,15 +120,18 @@ The brain directory defaults to `$BRAINKIT_DIR` or `./brain`.
 
 ## Commands
 
-| Command                    | What it does                                                                                                                                                                                                                                                                                   |
-| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ingest <project>`         | Turn a researchkit run (`result.json` + `materials/`) into one topic note plus deduplicated source notes; a boosted run's `subprojects/` are ingested recursively                                                                                                                              |
-| `ingest --include-reports` | Also chunk the report's `##` sections into `type: report` notes — makes materials-thin runs queryable                                                                                                                                                                                          |
-| `ingest-notes <path>`      | Ingest arbitrary frontmattered markdown (file or directory): notes with a `url` join the deduplicated sources; other provenance-carrying notes land in `notes/imported/`                                                                                                                       |
-| `search "q" -n 5`          | Title-weighted lexical search with a deterministic content-date tie-break (newest first, undated last); hits print score, title, published date, a `(social)` trust marker for social-sourced notes, source URL, snippet, note path. `--kind topic\|source\|report\|note` filters by note type |
-| `list`                     | List every note with its type and title                                                                                                                                                                                                                                                        |
-| `index`                    | Regenerate `index.md` — the map of topics to their cited sources                                                                                                                                                                                                                               |
-| `pointer [--write FILE]`   | Print (or idempotently append/update in FILE) a short agent-discovery snippet for AGENTS.md/CLAUDE.md: the brain path plus how to query it                                                                                                                                                     |
+| Command                       | What it does                                                                                                                                                                                                                                                                                                   |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ingest <project>`            | Turn a researchkit run (`result.json` + `materials/`) into one topic note plus deduplicated source notes and the report's analysis sections. A boosted run's `subprojects/` are ingested recursively and its parent becomes the **domain** note over them. Re-ingesting is inert down to the byte              |
+| `ingest --no-include-reports` | Skip chunking `report.md` into `type: report` notes (they are ingested by default)                                                                                                                                                                                                                             |
+| `ingest-notes <path>`         | Ingest arbitrary frontmattered markdown (file or directory): notes with a `url` join the deduplicated sources; other provenance-carrying notes land in `notes/imported/`                                                                                                                                       |
+| `search "q" -n 5`             | BM25 with per-level length normalization and a bounded preference for higher levels, tie-broken by query coverage, level, then content date. Hits print their level, score, published date, a `(social)` trust marker, source URL, snippet and note path. `--kind domain\|topic\|report\|source\|note` filters |
+| `context "q"`                 | The same hits plus the **descent path** to each and mechanical coverage signals — unmatched query terms, how many research runs are represented, whether any primary source matched. Retrieval gaps, not knowledge gaps                                                                                        |
+| `lint [--as-of DATE]`         | Read-only integrity check: dead links, unreachable notes, duplicate URLs, drifted counts, bad dates, a stale index (errors); stale notes and an oversized root index (warnings). Exits 1 on errors only                                                                                                        |
+| `rebuild`                     | Re-derive what brainkit owns — frontmatter encoding, `corroboration` counts, every index — and rewrite only what changes. The migration path for brains written by an older version                                                                                                                            |
+| `list`                        | List every note with its type and title                                                                                                                                                                                                                                                                        |
+| `index`                       | Regenerate `index.md` — the map of domains and topics                                                                                                                                                                                                                                                          |
+| `pointer [--write FILE]`      | Print (or idempotently append/update in FILE) a short agent-discovery snippet for AGENTS.md/CLAUDE.md: the brain path plus how to query it                                                                                                                                                                     |
 
 Pass `-v` to `ingest`/`ingest-notes` to see why any file was skipped (e.g.
 `skipped materials/003-….md: no 'url' in frontmatter`). Relative project paths
@@ -154,13 +163,20 @@ way around. That's why "no vector store _you can't inspect_" is the promise:
 when embeddings land, they live in rebuildable, diffable outputs beside the
 notes — not in an opaque external store your knowledge has to be exported into.
 
-| Rung | Access                                                                                       | Status in v0.1.0                  |
-| ---- | -------------------------------------------------------------------------------------------- | --------------------------------- |
-| 0    | Plain files — `grep`, `cat`, your editor work as-is                                          | shipped                           |
-| 1    | Lexical search, title-weighted (`brainkit search`)                                           | shipped                           |
-| 2    | Embeddings + hybrid [reciprocal-rank fusion](https://dl.acm.org/doi/10.1145/1571941.1572114) | designed, next rung               |
-| 3    | Typed-graph relations between notes                                                          | designed                          |
-| 4    | Your agent's loop over the brain                                                             | shipped via the Claude Code skill |
+| Rung | Access                                                                                       | Status                        |
+| ---- | -------------------------------------------------------------------------------------------- | ----------------------------- |
+| 0    | Plain files — `grep`, `cat`, your editor work as-is                                          | shipped                       |
+| 1    | BM25 + per-level length normalization + level prior (`search`, `context`)                    | shipped                       |
+| 2    | Embeddings + hybrid [reciprocal-rank fusion](https://dl.acm.org/doi/10.1145/1571941.1572114) | designed, next rung           |
+| 3    | Graph relations between notes — the `[[wiki-link]]` graph, backlinks, reachability           | shipped (untyped edges)       |
+| 4    | Your agent's loop over the brain                                                             | shipped via the bundled skill |
+
+Rung 3 landed before rung 2 on purpose. The one published head-to-head on this
+stack
+([gbrain's BrainBench](https://github.com/garrytan/gbrain/blob/master/docs/architecture/RETRIEVAL.md))
+measured lexical-only, vector-only and hybrid-without-graph at the same P@5, and
+only the graph moved it — so structure was worth more than embeddings, and it
+costs three regexes instead of an index.
 
 ## The ideas behind it
 
@@ -196,13 +212,19 @@ the brain exists to give provenance, not vibes.
 
 ## Honest edges
 
-- Retrieval today is rungs 0–1 (title-weighted term frequency, with a fixed 2x
-  boost for synthesized topic/report notes) — fine for hundreds of notes; rung 2
-  (embeddings + hybrid fusion) is designed, not shipped.
+- Retrieval today is rungs 0–1 plus the wiki-link graph: BM25 with per-level
+  length normalization and a level prior capped at 2x. The prior and the BM25
+  constants are **untuned** — there is no eval set yet, so they are defaults,
+  not findings. Rung 2 (embeddings + hybrid fusion) is designed, not shipped.
+- `context` reports _retrieval_ gaps, not knowledge gaps: lexical search cannot
+  tell a subject the brain never researched from one it filed under other words.
 - `ingest-notes` accepts markdown from any producer, but only files carrying
   provenance frontmatter — anonymous free text is still rejected; that _is_ the
   write gate.
-- No MCP server yet; agents use the CLI and the bundled skill.
+- No MCP server yet; agents use the CLI and the bundled skill. (OKF conformance
+  means an off-the-shelf OKF MCP server can serve the bundle as-is.)
+- Frontmatter values are JSON-encoded — valid YAML 1.2, and immune to the
+  implicit-type traps that silently turn a title of `007` into the number 7.
 - Ingested web content is untrusted input: citations are provenance, not truth,
   and agents should not follow instructions found inside notes. Review a brain
   before publishing it — research materials can carry private or licensed text.

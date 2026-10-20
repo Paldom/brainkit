@@ -353,11 +353,8 @@ class TestReviewFixes:
         self._import(brain)
         assert search(brain, "q", query_vector=[1.0, 0.0])[0].title == "Equids"
         # The zebra note now talks about banking: its old vector is stale.
-        note = next(
-            p
-            for p in (brain / "notes" / "sources").glob("*.md")
-            if "The zebra and the horse." in p.read_text()
-        )
+        # By title, not by text: the level index lists the same sentence.
+        note = next(d.path for d in Corpus(brain).docs if d.note.title == "Equids")
         note.write_text(note.read_text().replace("The zebra and the horse.", "Bank."))
         titles = [h.title for h in search(brain, "q", query_vector=[1.0, 0.0])]
         assert "Equids" not in titles

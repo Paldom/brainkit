@@ -8,6 +8,73 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-20
+
+The brain becomes trustworthy to write into and measurable to search. Every
+v0.2.0 data-loss bug found in review is fixed and pinned by a byte-level golden
+test against v0.2.0 output; ranking changes now ship only through a labelled
+eval with dev/held-out splits.
+
+### Added
+
+- **Eval harness.** `brainkit eval CASES.jsonl` scores Recall@5, MRR, nDCG and
+  false positives on no-answer queries. `tests/eval/` holds a pinned corpus,
+  lexical/paraphrase/relational/title/negative/multilingual/lifecycle strata,
+  per-split floors, and a cluster-bootstrap experiment runner. Each ranking
+  decision is recorded in `docs/eval/decisions/`.
+- **Agent-facing reads.** `--json` on the read commands (`schema: "brainkit/1"`,
+  JSON errors); `read` at abstract/outline/full depth or one `--section`;
+  `verify` a quotation against a note; `search --explain` and `--why`;
+  `context --budget/--exclude`; `lint --gaps`; `export llms-txt`.
+- **Query variants.** `search --also "…"` fuses agent-written paraphrases (RRF,
+  original query weighted 2x, skipped when the original is confident).
+- **Trust labels.** Computed, never stored: `derived`/`unsourced` for
+  agent-written notes without a human verification, `superseded`, and hygiene
+  flags for hidden characters, hidden markup, injection-shaped text and
+  credentials. `lint` checks grounding (quotes, dates and numbers must occur in
+  the sources a note derives from), `^[path:Lx-y]` locators, supersession and
+  derivation chains.
+- **Cross-run subject notes.** Agent-authored notes keep an append-only history
+  below `<!-- brainkit:history -->`; `<!-- brainkit:keep -->` regions survive
+  regeneration; replaced captures are archived under `notes/sources/.captures/`.
+- **Time and drafts.** `--as-of DATE` and `--include-drafts` on search/context.
+- **Rung 2, opt-in.** `brainkit vectors pull|build|status|export|import` and
+  `--vectors`: a pinned 256-dimension static embedding model, stdlib-only
+  inference, fused by RRF. `vectors pull` is brainkit's only network access.
+- **MCP server.** `brainkit mcp` serves the brain read-only over stdio (protocol
+  2026-07-28 and 2025-11-25).
+- **Claude Code plugin.** `.claude-plugin/` packages the skill, plus an opt-in
+  SessionStart hook (`BRAINKIT_HOOKS=1`) that prints the brain pointer.
+- Markdown links count as graph edges; `aliases` keep old slugs resolvable;
+  `ingest-notes --namespace` gives imports a stable origin.
+
+### Changed
+
+- **Ranking** (each change measured): abstention on low-confidence queries, an
+  exact title match ranks first, citations propagate half their score to
+  unmatched parent notes, superseded notes are halved. Multilingual tokenization
+  (accent folding, compounds, CJK bigrams).
+- **Write safety.** One OS-level writer lock, atomic writes that preserve file
+  mode, symlink confinement. Rewrites refuse a >30% shrink, a rewritten history,
+  or a changed type; `--expect-digest` gives compare-and-swap; list fields merge
+  instead of being replaced. Refusals exit 1.
+- **Provenance admission.** A title alone is no longer provenance; title-only
+  imports pass with a warning for one more minor version.
+- A no-op ingest writes nothing, including the log; counts are real.
+- `context` counts represented runs over plural `projects` and calls archived
+  pages "source archives".
+- README: the withdrawn gbrain BrainBench P@5 figure is no longer cited.
+- CI validates an ingested brain with the independent OKF v0.2 validator
+  (`scaccogatto/okf-skills`, pinned).
+
+### Fixed
+
+- A failed or leaked synthesis no longer overwrites a good topic note.
+- Imported notes with the same title no longer overwrite each other; an import
+  can no longer shadow a slug at another level (`duplicate-slug` lint error).
+- Re-ingesting a URL merges provenance instead of dropping it.
+- Typed frontmatter (numbers, lists, nested values) round-trips unchanged.
+
 ## [0.2.0] - 2026-09-07
 
 The brain becomes a pyramid. Notes now sit at four levels — domain, topic,
@@ -254,6 +321,7 @@ frontmatter and regenerate the indexes.
 - Full toolchain: uv packaging, ruff, strict mypy, pytest with branch coverage,
   pre-commit, CI quality gate, and release automation.
 
-[unreleased]: https://github.com/Paldom/brainkit/compare/v0.2.0...HEAD
+[unreleased]: https://github.com/Paldom/brainkit/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/Paldom/brainkit/releases/tag/v0.3.0
 [0.2.0]: https://github.com/Paldom/brainkit/releases/tag/v0.2.0
 [0.1.0]: https://github.com/Paldom/brainkit/tree/045c19d

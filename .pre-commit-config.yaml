@@ -6,7 +6,9 @@ repos:
     rev: v6.0.0
     hooks:
       - id: trailing-whitespace
+        exclude: ^tests/(eval|fixtures)/ # pinned fixtures: archived pages stay byte-exact
       - id: end-of-file-fixer
+        exclude: ^tests/(eval|fixtures)/ # pinned fixtures: archived pages stay byte-exact
       - id: check-yaml
         args: [--allow-multiple-documents]
       - id: check-toml
@@ -29,6 +31,7 @@ repos:
     hooks:
       - id: prettier
         types_or: [yaml, markdown, json]
+        exclude: ^tests/(eval|fixtures)/ # pinned fixtures: archived pages stay byte-exact
         args: [--prose-wrap=always]
 
   # Non-Python validation

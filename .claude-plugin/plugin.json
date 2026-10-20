@@ -1,0 +1,19 @@
+{
+  "name": "brainkit",
+  "version": "0.3.0",
+  "description": "Portable, cited agent brain: Git-native markdown research notes with gated writes, lexical retrieval with abstention, trust labels and a read-only MCP server.",
+  "author": { "name": "Paldom" },
+  "homepage": "https://github.com/Paldom/brainkit",
+  "repository": "https://github.com/Paldom/brainkit",
+  "license": "MIT",
+  "keywords": [
+    "knowledge-base",
+    "memory",
+    "markdown",
+    "okf",
+    "research",
+    "citations"
+  ],
+  "skills": ["./.claude/skills/"],
+  "hooks": "./hooks/hooks.json"
+}

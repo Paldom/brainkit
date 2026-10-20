@@ -1,0 +1,355 @@
+{
+ "topic": "Portable knowledge and context formats for agents: OKF (open knowledge format), AGENTS.md/CLAUDE.md conventions, MCP resources, llms.txt, Markdown+frontmatter vaults — and whether any interoperable standard for moving an agent's memory between tools is actually emerging.",
+ "generated_at": "2026-08-28T20:51:52+00:00",
+ "total_cited": 429,
+ "fetched": 334,
+ "attempted": 402,
+ "entries": [
+  {
+   "url": "https://alexop.dev/posts/open-knowledge-format-markdown-frontmatter-agent-knowledge/",
+   "status": "fetched",
+   "origin": "http",
+   "file": "008-alexopdev-open-knowledge-format-i-already-do-this-and-now.md",
+   "final_url": "https://alexop.dev/posts/open-knowledge-format-markdown-frontmatter-agent-knowledge/",
+   "title": "Open Knowledge Format: I Already Do This, and Now It Has a Name | alexop.dev",
+   "source_type": "social",
+   "providers": [
+    "brave",
+    "gemini",
+    "kimi"
+   ],
+   "chars": 12746
+  },
+  {
+   "url": "https://cloud.google.com/blog/products/data-analytics/how-the-open-knowledge-format-can-improve-data-sharing",
+   "status": "fetched",
+   "origin": "http",
+   "file": "009-cloudgooglecom-how-the-open-knowledge-format-can-improve.md",
+   "final_url": "https://cloud.google.com/blog/products/data-analytics/how-the-open-knowledge-format-can-improve-data-sharing",
+   "title": "How the Open Knowledge Format can improve data sharing | Google Cloud Blog",
+   "source_type": "social",
+   "providers": [
+    "brave",
+    "exa",
+    "gemini",
+    "grok",
+    "kimi",
+    "tavily",
+    "site:exa"
+   ],
+   "chars": 12364
+  },
+  {
+   "url": "https://flowtivity.ai/blog/google-open-knowledge-format/",
+   "status": "fetched",
+   "origin": "http",
+   "file": "011-flowtivityai-google-open-knowledge-format-how-plain.md",
+   "final_url": "https://flowtivity.ai/blog/google-open-knowledge-format/",
+   "title": "Google Open Knowledge Format: How Plain Markdown Files Are Becoming the Brain of AI Agents | Flowtivity",
+   "source_type": "social",
+   "providers": [
+    "brave",
+    "kimi"
+   ],
+   "chars": 18054
+  },
+  {
+   "url": "https://witscode.com/open-knowledge-format",
+   "status": "fetched",
+   "origin": "http",
+   "file": "012-witscodecom-open-knowledge-format-okf-the-complete-2026.md",
+   "final_url": "https://witscode.com/open-knowledge-format",
+   "title": "Open Knowledge Format (OKF): The Complete 2026 Guide",
+   "source_type": "social",
+   "providers": [
+    "brave",
+    "exa",
+    "grok",
+    "site:exa"
+   ],
+   "chars": 20747
+  },
+  {
+   "url": "https://explainx.ai/blog/google-open-knowledge-format-okf-ai-agents-2026",
+   "status": "fetched",
+   "origin": "http",
+   "file": "013-explainxai-open-knowledge-format-okf-google-ai-agent.md",
+   "final_url": "https://explainx.ai/blog/google-open-knowledge-format-okf-ai-agents-2026",
+   "title": "Open Knowledge Format (OKF): Google AI Agent Standard | explainx.ai Blog | explainx.ai",
+   "source_type": "social",
+   "providers": [
+    "brave",
+    "exa",
+    "kimi"
+   ],
+   "chars": 12926
+  },
+  {
+   "url": "https://medium.com/@tahirbalarabe2/what-is-open-knowledge-format-okf-270b20791802",
+   "status": "fetched",
+   "origin": "http",
+   "file": "014-mediumcom-what-is-open-knowledge-formatokf-by-tahir-jun.md",
+   "final_url": "https://medium.com/@tahirbalarabe2/what-is-open-knowledge-format-okf-270b20791802",
+   "title": "What is Open Knowledge Format(OKF)? | by Tahir | Jun, 2026 | Medium",
+   "source_type": "social",
+   "providers": [
+    "brave",
+    "kimi",
+    "tavily"
+   ],
+   "chars": 14222
+  },
+  {
+   "url": "https://www.storagenewsletter.com/2026/07/06/introducing-the-open-knowledge-format/",
+   "status": "fetched",
+   "origin": "http",
+   "file": "015-storagenewslettercom-introducing-the-open-knowledge-format.md",
+   "final_url": "https://www.storagenewsletter.com/2026/07/06/introducing-the-open-knowledge-format/",
+   "title": "Introducing the Open Knowledge Format - StorageNewsletter",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 12890
+  },
+  {
+   "url": "https://x.com/GoogleCloudTech/status/2067012903337664886",
+   "status": "fetched",
+   "origin": "http",
+   "file": "016-xcom-google-cloud-tech-on-x-introducing-the-open-knowledge.md",
+   "final_url": "https://x.com/GoogleCloudTech/status/2067012903337664886",
+   "title": "Google Cloud Tech on X: \"Introducing the Open Knowledge Format (OKF), an open specification that formalizes the LLM-wiki pattern into a portable, interoperable format. AI is only as smart as the context we give it. As we build more advanced, agentic AI systems, they need accurate metadata and context to\" / X",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 4368
+  },
+  {
+   "url": "https://www.gitbook.com/blog/what-is-okf-open-knowledge-format",
+   "status": "fetched",
+   "origin": "http",
+   "file": "017-gitbookcom-what-is-okf-understanding-googles-open-knowledge.md",
+   "final_url": "https://www.gitbook.com/blog/what-is-okf-open-knowledge-format",
+   "title": "What is OKF? Understanding Google’s Open Knowledge Format | GitBook Blog",
+   "source_type": "social",
+   "providers": [
+    "brave",
+    "gemini"
+   ],
+   "chars": 18001
+  },
+  {
+   "url": "https://suganthan.com/blog/open-knowledge-format/",
+   "status": "fetched",
+   "origin": "http",
+   "file": "018-suganthancom-open-knowledge-format-okf-googles-new-markdown.md",
+   "final_url": "https://suganthan.com/blog/open-knowledge-format/",
+   "title": "Open Knowledge Format (OKF): Google's New Markdown Format for AI Agents — Suganthan",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 13421
+  },
+  {
+   "url": "https://www.viableedge.com/blog/open-knowledge-format-guide",
+   "status": "fetched",
+   "origin": "http",
+   "file": "019-viableedgecom-open-knowledge-format-okf-the-complete-guide.md",
+   "final_url": "https://www.viableedge.com/blog/open-knowledge-format-guide",
+   "title": "Open Knowledge Format (OKF): The Complete Guide | The Viable Edge",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 16383
+  },
+  {
+   "url": "https://medium.com/@marc.bara.iniesta/googles-new-format-for-agent-context-a-standard-or-just-a-folder-82fb21d92041",
+   "status": "fetched",
+   "origin": "http",
+   "file": "020-mediumcom-googles-new-format-for-agent-context-a-standard.md",
+   "final_url": "https://medium.com/@marc.bara.iniesta/googles-new-format-for-agent-context-a-standard-or-just-a-folder-82fb21d92041",
+   "title": "Google’s New Format for Agent Context: A Standard, or Just a Folder? | by Marc Bara | Medium",
+   "source_type": "social",
+   "providers": [
+    "brave",
+    "tavily"
+   ],
+   "chars": 6116
+  },
+  {
+   "url": "https://okf.md/spec/",
+   "status": "fetched",
+   "origin": "http",
+   "file": "021-okfmd-open-knowledge-format-okf-an-annotated-guide.md",
+   "final_url": "https://okf.md/spec/",
+   "title": "Open Knowledge Format (OKF) — An Annotated Guide",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 26253
+  },
+  {
+   "url": "https://typescript.news/articles/2026-06-17-google-cloud-okf-open-knowledge-format-deep-dive",
+   "status": "fetched",
+   "origin": "http",
+   "file": "022-typescriptnews-google-clouds-open-knowledge-format-is-a.md",
+   "final_url": "https://typescript.news/articles/2026-06-17-google-cloud-okf-open-knowledge-format-deep-dive",
+   "title": "Google Cloud's Open Knowledge Format Is a Standard, Not a Product: A Deep Dive Into OKF v0.1 · typescript.news",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 46839
+  },
+  {
+   "url": "https://medium.com/@AkhilAIWorld/google-just-quietly-released-the-missing-piece-for-ai-agents-its-called-okf-7e96a33898ce",
+   "status": "fetched",
+   "origin": "http",
+   "file": "023-mediumcom-google-just-quietly-released-the-missing-piece.md",
+   "final_url": "https://medium.com/@AkhilAIWorld/google-just-quietly-released-the-missing-piece-for-ai-agents-its-called-okf-7e96a33898ce",
+   "title": "Google Just Quietly Released the Missing Piece for AI Agents. It’s Called OKF. | by Akhil | Jun, 2026 | Medium",
+   "source_type": "social",
+   "providers": [
+    "brave",
+    "tavily"
+   ],
+   "chars": 16136
+  },
+  {
+   "url": "https://www.dsebastien.net/open-knowledge-format-okf/",
+   "status": "fetched",
+   "origin": "http",
+   "file": "024-dsebastiennet-open-knowledge-format-okf.md",
+   "final_url": "https://www.dsebastien.net/open-knowledge-format-okf/",
+   "title": "Open Knowledge Format (OKF)",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 12455
+  },
+  {
+   "url": "https://www.tryvizup.com/blog/open-knowledge-format-structuring-knowledge-for-ai-agents",
+   "status": "fetched",
+   "origin": "http",
+   "file": "025-tryvizupcom-open-knowledge-format-structuring-knowledge-for.md",
+   "final_url": "https://www.tryvizup.com/blog/open-knowledge-format-structuring-knowledge-for-ai-agents",
+   "title": "Open Knowledge Format: Structuring Knowledge for AI Agents | Vizup",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 11832
+  },
+  {
+   "url": "https://okf.md/faq/",
+   "status": "fetched",
+   "origin": "http",
+   "file": "026-okfmd-faq-open-knowledge-format-okf.md",
+   "final_url": "https://okf.md/faq/",
+   "title": "FAQ — Open Knowledge Format (OKF)",
+   "source_type": "web",
+   "providers": [
+    "brave"
+   ],
+   "chars": 21072
+  },
+  {
+   "url": "https://github.com/GoogleCloudPlatform/open-knowledge-format/tree/main",
+   "status": "fetched",
+   "origin": "http",
+   "file": "027-githubcom-github-googlecloudplatformopen-knowledge-format.md",
+   "final_url": "https://github.com/GoogleCloudPlatform/open-knowledge-format/tree/main",
+   "title": "GitHub - GoogleCloudPlatform/open-knowledge-format · GitHub",
+   "source_type": "social",
+   "providers": [
+    "exa",
+    "site:exa"
+   ],
+   "chars": 12002
+  },
+  {
+   "url": "https://github.com/ItamarZand88/awesome-agent-conventions",
+   "status": "fetched",
+   "origin": "http",
+   "file": "028-githubcom-github-itamarzand88awesome-agent-conventions-a.md",
+   "final_url": "https://github.com/ItamarZand88/awesome-agent-conventions",
+   "title": "GitHub - ItamarZand88/awesome-agent-conventions: A curated guide to convention files AI agents read, write, and act on: AGENTS.md, CLAUDE.md, SKILL.md, llms.txt, MCP configs, rules, and examples. · GitHub",
+   "source_type": "social",
+   "providers": [
+    "exa"
+   ],
+   "chars": 17948
+  },
+  {
+   "url": "https://ontologist.substack.com/p/the-format-convergence",
+   "status": "fetched",
+   "origin": "http",
+   "file": "029-ontologistsubstackcom-the-format-convergence-by-kurt-cagle.md",
+   "final_url": "https://ontologist.substack.com/p/the-format-convergence",
+   "title": "The Format Convergence - by Kurt Cagle and Chloe Shannon",
+   "source_type": "social",
+   "providers": [
+    "exa"
+   ],
+   "chars": 13297
+  },
+  {
+   "url": "https://medium.com/data-science-collective/claude-md-vs-agents-md-vs-skill-md-which-file-owns-what-in-2026-13859378f56a",
+   "status": "fetched",
+   "origin": "http",
+   "file": "030-mediumcom-medium.md",
+   "final_url": "https://medium.com/data-science-collective/claude-md-vs-agents-md-vs-skill-md-which-file-owns-what-in-2026-13859378f56a",
+   "title": "Medium",
+   "source_type": "social",
+   "providers": [
+    "exa"
+   ],
+   "chars": 2032
+  },
+  {
+   "url": "https://robertheubanks.substack.com/p/knowledge-custody-starts-with-a-file",
+   "status": "fetched",
+   "origin": "http",
+   "file": "031-robertheubankssubstackcom-knowledge-custody-starts-with-a.md",
+   "final_url": "https://robertheubanks.substack.com/p/knowledge-custody-starts-with-a-file",
+   "title": "Knowledge Custody Starts With a File Format",
+   "source_type": "social",
+   "providers": [
+    "exa"
+   ],
+   "chars": 21462
+  },
+  {
+   "url": "https://medium.com/@piyushrajyadav28/google-quietly-released-a-standard-for-how-ai-agents-should-read-your-companys-knowledge-9e780b476648",
+   "status": "fetched",
+   "origin": "http",
+   "file": "032-mediumcom-medium.md",
+   "final_url": "https://medium.com/@piyushrajyadav28/google-quietly-released-a-standard-for-how-ai-agents-should-read-your-companys-knowledge-9e780b476648",
+   "title": "Medium",
+   "source_type": "social",
+   "providers": [
+    "exa"
+   ],
+   "chars": 7481
+  },
+  {
+   "url": "https://dev.to/suhas_mallesh/open-knowledge-format-okf-the-markdown-standard-your-ai-agents-have-been-waiting-for-3mfb",
+   "status": "fetched",
+   "origin": "http",
+   "file": "033-devto-open-knowledge-format-okf-the-markdown-standard-your.md",
+   "final_url": "https://dev.to/suhas_mallesh/open-knowledge-format-okf-the-markdown-standard-your-ai-agents-have-been-waiting-for-3mfb",
+   "title": "Open Knowledge Format (OKF): The Markdown Standard Your AI Agents Have Been Waiting For 📚 - DEV Community",
+   "source_type": "social",
+   "providers": [
+    "exa",
+    "tavily"
+   ],
+   "chars": 12768
+  }
+ ]
+}

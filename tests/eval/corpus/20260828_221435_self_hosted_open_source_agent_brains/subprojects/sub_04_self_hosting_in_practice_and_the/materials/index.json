@@ -1,0 +1,337 @@
+{
+ "topic": "Self-hosting in practice and the motivation for it: Docker/local-model deployment, embedding choices, privacy and data-ownership arguments, plus practitioner discourse (why Garry Tan built his own) and the own-vs-rent-your-memory debate including vendor business models.",
+ "generated_at": "2026-08-28T21:03:35+00:00",
+ "total_cited": 396,
+ "fetched": 312,
+ "attempted": 376,
+ "entries": [
+  {
+   "url": "https://dev.to/sst21/self-hosting-in-2026-why-it-matters-and-how-to-get-started-233d",
+   "status": "fetched",
+   "origin": "http",
+   "file": "001-devto-self-hosting-in-2026-why-it-matters-and-how-to-get.md",
+   "final_url": "https://dev.to/sst21/self-hosting-in-2026-why-it-matters-and-how-to-get-started-233d",
+   "title": "Self-Hosting in 2026: Why It Matters and How to Get Started - DEV Community",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 7582
+  },
+  {
+   "url": "https://www.dreamhost.com/blog/self-hosting/",
+   "status": "fetched",
+   "origin": "http",
+   "file": "002-dreamhostcom-self-hosting-in-2026-is-the-revolution-finally.md",
+   "final_url": "https://www.dreamhost.com/blog/self-hosting/",
+   "title": "Self-Hosting in 2026: Is the Revolution Finally Here?",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 20644
+  },
+  {
+   "url": "https://www.docker.com/blog/self-hosted-alternatives-control-your-data/",
+   "status": "fetched",
+   "origin": "http",
+   "file": "003-dockercom-self-hosted-alternatives-control-your-data-docker.md",
+   "final_url": "https://www.docker.com/blog/self-hosted-alternatives-control-your-data/",
+   "title": "Self-Hosted Alternatives: Control Your Data | Docker",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 16172
+  },
+  {
+   "url": "https://www.premai.io/blog/self-hosted-ai-models-a-practical-guide-to-running-llms-locally-2026/",
+   "status": "fetched",
+   "origin": "http",
+   "file": "004-premaiio-self-hosted-ai-models-a-practical-guide-to-running.md",
+   "final_url": "https://www.premai.io/blog/self-hosted-ai-models-a-practical-guide-to-running-llms-locally-2026/",
+   "title": "Self-Hosted AI Models: A Practical Guide to Running LLMs Locally (2026)",
+   "source_type": "social",
+   "providers": [
+    "brave",
+    "kimi"
+   ],
+   "chars": 30905
+  },
+  {
+   "url": "https://grokipedia.com/page/Self-hosting_(network)",
+   "status": "fetched",
+   "origin": "http",
+   "file": "005-grokipediacom-self-hosting-network-grokipedia.md",
+   "final_url": "https://grokipedia.com/page/Self-hosting_(network)",
+   "title": "Self-hosting (network) — Grokipedia",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 48300
+  },
+  {
+   "url": "https://www.youware.com/blog/self-hosting",
+   "status": "fetched",
+   "origin": "http",
+   "file": "006-youwarecom-self-hosting-in-2026-take-back-control.md",
+   "final_url": "https://www.youware.com/blog/self-hosting",
+   "title": "Self Hosting in 2026: Take Back Control",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 12879
+  },
+  {
+   "url": "https://supermemory.ai/blog/self-hosted-ai-memory-tradeoffs/",
+   "status": "fetched",
+   "origin": "http",
+   "file": "007-supermemoryai-self-hosted-vs-cloud-memory-tradeoffs-july.md",
+   "final_url": "https://supermemory.ai/blog/self-hosted-ai-memory-tradeoffs/",
+   "title": "Self-Hosted vs Cloud Memory Tradeoffs July 2026 | Supermemory — Supermemory",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 16270
+  },
+  {
+   "url": "https://www.premai.io/blog/self-hosted-llm-guide-setup-tools-cost-comparison-2026/",
+   "status": "fetched",
+   "origin": "http",
+   "file": "008-premaiio-self-hosted-llm-guide-setup-tools-cost-comparison.md",
+   "final_url": "https://www.premai.io/blog/self-hosted-llm-guide-setup-tools-cost-comparison-2026/",
+   "title": "Self-Hosted LLM Guide: Setup, Tools & Cost Comparison (2026)",
+   "source_type": "social",
+   "providers": [
+    "brave",
+    "perplexity"
+   ],
+   "chars": 27459
+  },
+  {
+   "url": "https://www.mamalinux.com/what-is-self-hosting/",
+   "status": "fetched",
+   "origin": "http",
+   "file": "009-mamalinuxcom-what-is-self-hosting-may-2026-a-complete-guide.md",
+   "final_url": "https://www.mamalinux.com/what-is-self-hosting/",
+   "title": "What is Self-Hosting (May 2026) A Complete Guide for Linux Users",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 26373
+  },
+  {
+   "url": "https://www.hurrikane.net/why-self-hosting-matters-more-than-ever-in-2026",
+   "status": "fetched",
+   "origin": "http",
+   "file": "010-hurrikanenet-why-self-hosting-matters-more-than-ever-in.md",
+   "final_url": "https://www.hurrikane.net/why-self-hosting-matters-more-than-ever-in-2026",
+   "title": "Why Self-Hosting Matters More Than Ever in 2026 - Brian Olson",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 12594
+  },
+  {
+   "url": "https://infinum.com/blog/self-hosting-ai-models-a-practical-guide/",
+   "status": "fetched",
+   "origin": "http",
+   "file": "011-infinumcom-self-hosting-ai-models-a-practical-guide-to.md",
+   "final_url": "https://infinum.com/blog/self-hosting-ai-models-a-practical-guide/",
+   "title": "Self-Hosting AI Models: A Practical Guide to Building Your Own Stack",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 12668
+  },
+  {
+   "url": "https://rafftechnologies.com/learn/guides/self-hosting-getting-started",
+   "status": "fetched",
+   "origin": "http",
+   "file": "012-rafftechnologiescom-what-is-self-hosting-meaning-when-it.md",
+   "final_url": "https://rafftechnologies.com/learn/guides/self-hosting-getting-started",
+   "title": "What Is Self-Hosting? Meaning & When It Makes Sense",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 21791
+  },
+  {
+   "url": "https://selfhostpro.com/blog/self-hosting-software-how-to-get-started",
+   "status": "fetched",
+   "origin": "http",
+   "file": "013-selfhostprocom-self-hosting-software-what-it-is-why-it.md",
+   "final_url": "https://selfhostpro.com/blog/self-hosting-software-how-to-get-started",
+   "title": "Self-Hosting Software - What It Is, Why It Matters, and How to Get Started - Self-Host Pro",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 9218
+  },
+  {
+   "url": "https://www.serverspan.com/en/blog/self-host-website-guide-2026-the-complete-beginners-setup-architecture",
+   "status": "fetched",
+   "origin": "http",
+   "file": "014-serverspancom-self-host-website-guide-2026-the-complete.md",
+   "final_url": "https://www.serverspan.com/en/blog/self-host-website-guide-2026-the-complete-beginners-setup-architecture",
+   "title": "Self Host Website Guide 2026: The Complete Beginner’s Setup &amp; Architecture - ServerSpan",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 25034
+  },
+  {
+   "url": "https://solguruz.com/blog/how-to-run-llm-locally/",
+   "status": "fetched",
+   "origin": "http",
+   "file": "015-solguruzcom-self-hosted-llm-run-train-deploy-2026.md",
+   "final_url": "https://solguruz.com/blog/how-to-run-llm-locally/",
+   "title": "Self-Hosted LLM: Run, Train & Deploy (2026)",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 49227
+  },
+  {
+   "url": "https://www.opensourceforu.com/2026/05/self-hosted-vs-managed-cloud-choosing-the-right-infrastructure-for-modern-apps/",
+   "status": "fetched",
+   "origin": "http",
+   "file": "016-opensourceforucom-self-hosted-vs-managed-cloud-choosing-the.md",
+   "final_url": "https://www.opensourceforu.com/2026/05/self-hosted-vs-managed-cloud-choosing-the-right-infrastructure-for-modern-apps/",
+   "title": "Self-Hosted vs Managed Cloud: Choosing The Right Infrastructure For Modern Apps - Open Source For You",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 14021
+  },
+  {
+   "url": "https://p4sc4l.substack.com/p/self-hosting-commercially-available",
+   "status": "fetched",
+   "origin": "http",
+   "file": "017-p4sc4lsubstackcom-self-hosting-commercially-available-llms.md",
+   "final_url": "https://p4sc4l.substack.com/p/self-hosting-commercially-available",
+   "title": "Self-hosting. Commercially available LLMs are increasingly hampered by cost-driven efficiency measures, such as aggressive quantization and output filtering, which often degrade reasoning performance.",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 28120
+  },
+  {
+   "url": "https://plane.so/blog/why-is-self-hosting-making-a-comeback",
+   "status": "fetched",
+   "origin": "http",
+   "file": "018-planeso-why-is-self-hosting-making-a-comeback-plane-blog.md",
+   "final_url": "https://plane.so/blog/why-is-self-hosting-making-a-comeback",
+   "title": "Why is self-hosting making a comeback | Plane Blog",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 16761
+  },
+  {
+   "url": "https://www.plural.sh/blog/self-hosting-large-language-models/",
+   "status": "fetched",
+   "origin": "http",
+   "file": "019-pluralsh-self-hosted-llm-a-5-step-deployment-guide.md",
+   "final_url": "https://www.plural.sh/blog/self-hosting-large-language-models/",
+   "title": "Self-Hosted LLM: A 5-Step Deployment Guide",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 27726
+  },
+  {
+   "url": "https://www.xda-developers.com/understand-why-people-self-host-media/",
+   "status": "fetched",
+   "origin": "http",
+   "file": "020-xda-developerscom-i-finally-understand-why-people-self-host.md",
+   "final_url": "https://www.xda-developers.com/understand-why-people-self-host-media/",
+   "title": "I finally understand why people self-host their media",
+   "source_type": "web",
+   "providers": [
+    "brave"
+   ],
+   "chars": 14514
+  },
+  {
+   "url": "https://dev.to/syed_masoodshah_1984/i-built-a-private-self-hosted-ai-home-lab-with-docker-offline-chatgpt-monitoring-backups-56l4",
+   "status": "fetched",
+   "origin": "http",
+   "file": "021-devto-i-built-a-private-self-hosted-ai-home-lab-with-docker.md",
+   "final_url": "https://dev.to/syed_masoodshah_1984/i-built-a-private-self-hosted-ai-home-lab-with-docker-offline-chatgpt-monitoring-backups-56l4",
+   "title": "I built a private, self-hosted AI home lab with Docker (offline ChatGPT + monitoring + backups) - DEV Community",
+   "source_type": "social",
+   "providers": [
+    "exa"
+   ],
+   "chars": 4250
+  },
+  {
+   "url": "https://theaiengineer.substack.com/p/should-you-self-host-inference",
+   "status": "fetched",
+   "origin": "http",
+   "file": "022-theaiengineersubstackcom-should-you-self-host-llm-inference.md",
+   "final_url": "https://theaiengineer.substack.com/p/should-you-self-host-inference",
+   "title": "Should You Self-Host LLM Inference? Cost and Risk Guide",
+   "source_type": "social",
+   "providers": [
+    "exa",
+    "kimi"
+   ],
+   "chars": 17654
+  },
+  {
+   "url": "https://www.linkedin.com/posts/garrytan_stop-building-foxconn-factories-for-your-activity-7467261872317165569-wF3P",
+   "status": "fetched",
+   "origin": "http",
+   "file": "023-linkedincom-stop-building-foxconn-factories-for-your-agents.md",
+   "final_url": "https://www.linkedin.com/posts/garrytan_stop-building-foxconn-factories-for-your-activity-7467261872317165569-wF3P",
+   "title": "Stop building Foxconn factories for your agents | Garry Tan",
+   "source_type": "social",
+   "providers": [
+    "exa"
+   ],
+   "chars": 5763
+  },
+  {
+   "url": "https://dev.to/smngvlkz/how-i-replaced-gemini-with-a-self-hosted-llm-for-two-production-apps-3069",
+   "status": "fetched",
+   "origin": "http",
+   "file": "024-devto-how-i-replaced-gemini-with-a-self-hosted-llm-for-two.md",
+   "final_url": "https://dev.to/smngvlkz/how-i-replaced-gemini-with-a-self-hosted-llm-for-two-production-apps-3069",
+   "title": "How I Replaced Gemini with a Self-Hosted LLM for Two Production Apps - DEV Community",
+   "source_type": "social",
+   "providers": [
+    "exa"
+   ],
+   "chars": 17589
+  },
+  {
+   "url": "https://dev.to/samadhi_tattoo_7ed1c0d05b/self-hosted-ai-doesnt-mean-local-weights-heres-what-actually-stays-on-your-box-2j6e",
+   "status": "fetched",
+   "origin": "http",
+   "file": "025-devto-self-hosted-ai-doesnt-mean-local-weights-heres-what.md",
+   "final_url": "https://dev.to/samadhi_tattoo_7ed1c0d05b/self-hosted-ai-doesnt-mean-local-weights-heres-what-actually-stays-on-your-box-2j6e",
+   "title": "Self-hosted AI doesn't mean local weights — here's what actually stays on your box - DEV Community",
+   "source_type": "social",
+   "providers": [
+    "exa"
+   ],
+   "chars": 6055
+  }
+ ]
+}

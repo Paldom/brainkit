@@ -1,0 +1,238 @@
+{
+ "topic": "Survey and technical evaluation of production-grade open-source GitHub implementations replicating Karpathy-style second brain systems.",
+ "generated_at": "2026-10-19T21:50:57+00:00",
+ "total_cited": 239,
+ "fetched": 17,
+ "attempted": 25,
+ "entries": [
+  {
+   "url": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f",
+   "status": "fetched",
+   "origin": "http",
+   "file": "004-gistgithubcom-llm-wiki-github.md",
+   "final_url": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f",
+   "title": "llm-wiki · GitHub",
+   "source_type": "social",
+   "providers": [
+    "brave",
+    "gemini",
+    "site:exa"
+   ],
+   "chars": 83261
+  },
+  {
+   "url": "https://codersera.com/blog/karpathy-llm-knowledge-base-second-brain/",
+   "status": "fetched",
+   "origin": "http",
+   "file": "005-coderseracom-karpathys-llm-knowledge-base-build-your-second.md",
+   "final_url": "https://codersera.com/blog/karpathy-llm-knowledge-base-second-brain/",
+   "title": "Karpathy's LLM Knowledge Base: Build Your Second Brain",
+   "source_type": "social",
+   "providers": [
+    "brave",
+    "kimi"
+   ],
+   "chars": 17043
+  },
+  {
+   "url": "https://github.com/topics/karpathy-llm-wiki",
+   "status": "fetched",
+   "origin": "http",
+   "file": "006-githubcom-karpathy-llm-wiki-github-topics-github.md",
+   "final_url": "https://github.com/topics/karpathy-llm-wiki",
+   "title": "karpathy-llm-wiki · GitHub Topics · GitHub",
+   "source_type": "social",
+   "providers": [
+    "brave",
+    "tavily"
+   ],
+   "chars": 10540
+  },
+  {
+   "url": "https://github.com/topics/karpathy-inspired",
+   "status": "fetched",
+   "origin": "http",
+   "file": "009-githubcom-karpathy-inspired-github-topics-github.md",
+   "final_url": "https://github.com/topics/karpathy-inspired",
+   "title": "karpathy-inspired · GitHub Topics · GitHub",
+   "source_type": "social",
+   "providers": [
+    "brave",
+    "tavily"
+   ],
+   "chars": 9904
+  },
+  {
+   "url": "https://theaioperator.io/p/i-rebuilt-karpathys-llm-wiki-heres",
+   "status": "fetched",
+   "origin": "http",
+   "file": "011-theaioperatorio-karpathys-llm-wiki-gist-decoded-what-i-added.md",
+   "final_url": "https://theaioperator.io/p/i-rebuilt-karpathys-llm-wiki-heres",
+   "title": "Karpathy's LLM Wiki Gist Decoded: What I Added",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 18271
+  },
+  {
+   "url": "https://www.aibyaakash.com/p/karpathy-second-brain",
+   "status": "fetched",
+   "origin": "http",
+   "file": "013-aibyaakashcom-the-complete-guide-to-karpathys-second-brain.md",
+   "final_url": "https://www.aibyaakash.com/p/karpathy-second-brain",
+   "title": "The Complete Guide to Karpathy's Second Brain",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 18746
+  },
+  {
+   "url": "https://blog.dailydoseofds.com/p/build-your-own-100-local-ai-second",
+   "status": "fetched",
+   "origin": "http",
+   "file": "015-blogdailydoseofdscom-build-your-own-100-local-ai-second.md",
+   "final_url": "https://blog.dailydoseofds.com/p/build-your-own-100-local-ai-second",
+   "title": "Build Your Own 100% Local AI Second Brain - by Avi Chawla",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 13804
+  },
+  {
+   "url": "https://gist.github.com/rohitg00/2067ab416f7bbe447c1977edaaa681e2",
+   "status": "fetched",
+   "origin": "http",
+   "file": "016-gistgithubcom-llm-wiki-v2-extending-karpathys-llm-wiki.md",
+   "final_url": "https://gist.github.com/rohitg00/2067ab416f7bbe447c1977edaaa681e2",
+   "title": "LLM Wiki v2 — extending Karpathy's LLM Wiki pattern with lessons from building agentmemory",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 44067
+  },
+  {
+   "url": "https://github.com/topics/karpathy",
+   "status": "fetched",
+   "origin": "http",
+   "file": "017-githubcom-karpathy-github-topics-github.md",
+   "final_url": "https://github.com/topics/karpathy",
+   "title": "karpathy · GitHub Topics · GitHub",
+   "source_type": "social",
+   "providers": [
+    "brave",
+    "tavily"
+   ],
+   "chars": 9527
+  },
+  {
+   "url": "https://github.com/yibie/awesome-autoresearch",
+   "status": "fetched",
+   "origin": "http",
+   "file": "018-githubcom-github-yibieawesome-autoresearch-awesome.md",
+   "final_url": "https://github.com/yibie/awesome-autoresearch",
+   "title": "GitHub - yibie/awesome-autoresearch: awesome autoresearch list · GitHub",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 2583
+  },
+  {
+   "url": "https://www.mindstudio.ai/blog/andrej-karpathy-llm-wiki-obsidian-ai-second-brain",
+   "status": "fetched",
+   "origin": "http",
+   "file": "019-mindstudioai-andrej-karpathys-llm-wiki-build-a-self.md",
+   "final_url": "https://www.mindstudio.ai/blog/andrej-karpathy-llm-wiki-obsidian-ai-second-brain",
+   "title": "Andrej Karpathy's LLM Wiki: Build a Self-Updating AI Second Brain with Obsidian in 1 Hour | MindStudio",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 16921
+  },
+  {
+   "url": "https://github.com/topics/karpathy-wiki",
+   "status": "fetched",
+   "origin": "http",
+   "file": "020-githubcom-karpathy-wiki-github-topics-github.md",
+   "final_url": "https://github.com/topics/karpathy-wiki",
+   "title": "karpathy-wiki · GitHub Topics · GitHub",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 8085
+  },
+  {
+   "url": "https://github.com/gavischneider/awesome-llm-wiki",
+   "status": "fetched",
+   "origin": "http",
+   "file": "021-githubcom-github-gavischneiderawesome-llm-wiki-a-curated.md",
+   "final_url": "https://github.com/gavischneider/awesome-llm-wiki",
+   "title": "GitHub - gavischneider/awesome-llm-wiki: A curated list of foundational blueprints, functional frameworks, and technical guides for building compounding, AI-compiled knowledge bases. · GitHub",
+   "source_type": "web",
+   "providers": [
+    "brave",
+    "site:exa"
+   ],
+   "chars": 2233
+  },
+  {
+   "url": "https://agricidaniel.com/blog/claude-obsidian-ai-second-brain",
+   "status": "fetched",
+   "origin": "http",
+   "file": "022-agricidanielcom-obsidian-ai-second-brain-the-free-self.md",
+   "final_url": "https://agricidaniel.com/blog/claude-obsidian-ai-second-brain",
+   "title": "Obsidian AI Second Brain: The Free Self-Organizing Plugin",
+   "source_type": "web",
+   "providers": [
+    "brave"
+   ],
+   "chars": 14323
+  },
+  {
+   "url": "https://github.com/charlie947/ai-second-brain",
+   "status": "fetched",
+   "origin": "http",
+   "file": "023-githubcom-github-charlie947ai-second-brain-build-a-living.md",
+   "final_url": "https://github.com/charlie947/ai-second-brain",
+   "title": "GitHub - charlie947/ai-second-brain: Build a living, searchable AI second brain from your ChatGPT, Claude, and research history - Karpathy-style. A Claude Code skill. · GitHub",
+   "source_type": "web",
+   "providers": [
+    "brave",
+    "tavily"
+   ],
+   "chars": 9409
+  },
+  {
+   "url": "https://www.askglitch.com/blog/build-a-second-brain",
+   "status": "fetched",
+   "origin": "http",
+   "file": "024-askglitchcom-build-a-second-brain-karpathys-llm-wiki-method.md",
+   "final_url": "https://www.askglitch.com/blog/build-a-second-brain",
+   "title": "Build a Second Brain: Karpathy's LLM Wiki Method, Step by Step | Professor Glitch",
+   "source_type": "web",
+   "providers": [
+    "brave"
+   ],
+   "chars": 16031
+  },
+  {
+   "url": "https://github.com/alvinreal/awesome-autoresearch",
+   "status": "fetched",
+   "origin": "http",
+   "file": "025-githubcom-github-webfuse-comawesome-autoresearch-a-curated.md",
+   "final_url": "https://github.com/webfuse-com/awesome-autoresearch",
+   "title": "GitHub - webfuse-com/awesome-autoresearch: A curated list of autonomous improvement loops, research agents, and autoresearch-style systems inspired by Karpathy's autoresearch. · GitHub",
+   "source_type": "web",
+   "providers": [
+    "brave"
+   ],
+   "chars": 23813
+  }
+ ]
+}

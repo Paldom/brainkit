@@ -118,10 +118,10 @@ class TestLevels:
         assert domain.meta["topic_count"] == "2"
         assert domain.meta["description"]  # the run's own super_summary
 
-        # and it links DOWN to each child by wiki-link
+        # and it links DOWN to each child with an OKF §6.1 markdown link
         assert "## Topics" in domain.body
         for child in report.sub_reports:
-            assert f"[[{child.topic_note.stem}]]" in domain.body
+            assert f"(../topics/{child.topic_note.name})" in domain.body
 
     def test_children_point_back_up(self, tmp_path: Path) -> None:
         brain = tmp_path / "brain"
@@ -337,7 +337,7 @@ class TestLint:
         body = report.topic_note.read_text(encoding="utf-8")
         assert "## Report sections" in body
         for note in report.report_notes:
-            assert f"[[{note.stem}]]" in body
+            assert f"(../reports/{note.name})" in body
         assert [f for f in lint(brain) if f.check == "unreachable"] == []
 
     def test_dead_links_are_found(self, tmp_path: Path) -> None:
@@ -421,7 +421,7 @@ class TestLint:
         )
         source.write_text(legacy, encoding="utf-8")
 
-        changed = rebuild(brain)
+        changed = rebuild(brain).changed
         assert source in changed
         note = parse_note(source.read_text(encoding="utf-8"))
         assert note.meta["title"] == "Docker Security: A Practical Guide"
@@ -435,7 +435,7 @@ class TestLint:
     def test_rebuild_is_idempotent(self, tmp_path: Path) -> None:
         brain = tmp_path / "brain"
         ingest_research_project(boosted(tmp_path), brain)
-        assert rebuild(brain) == []  # nothing to do on a current brain
+        assert rebuild(brain).changed == []  # nothing to do on a current brain
 
     def test_oversized_root_index_is_flagged(self, tmp_path: Path) -> None:
         brain = tmp_path / "brain"
@@ -527,7 +527,8 @@ class TestLint:
         child = report.sub_reports[0].topic_note
         body = child.read_text(encoding="utf-8")
         orphaned = report.sub_reports[0].source_notes[0].stem
-        child.write_text(body.replace(f"- [[{orphaned}]]", "- (removed)"), "utf-8")
+        lines = [line for line in body.splitlines() if f"/{orphaned}.md)" not in line]
+        child.write_text("\n".join(lines) + "\n", "utf-8")
         findings = [f for f in lint(brain) if f.check == "unreachable"]
         assert [f.path.stem for f in findings] == [orphaned]
 
@@ -586,7 +587,7 @@ class TestContext:
         brain = tmp_path / "brain"
         ingest_research_project(boosted(tmp_path), brain)
         _hits, coverage = context(brain, "converging", kind="domain")
-        assert any("no primary source" in s for s in coverage.signals())
+        assert any("no source archive" in s for s in coverage.signals())
 
     def test_social_tier_hits_are_counted(self, tmp_path: Path) -> None:
         brain = tmp_path / "brain"

@@ -1,0 +1,496 @@
+{
+ "measured_at": "f5aecc2",
+ "reason": "Phase 4 complete (firewall, lifecycle, hygiene)",
+ "metrics": {
+  "dev.all.hit": {
+   "value": 0.8514,
+   "floor": 0.8314,
+   "direction": "higher"
+  },
+  "dev.all.recall": {
+   "value": 0.8514,
+   "floor": 0.8314,
+   "direction": "higher"
+  },
+  "dev.all.all_required": {
+   "value": 0.8784,
+   "floor": 0.8584,
+   "direction": "higher"
+  },
+  "dev.all.precision": {
+   "value": 0.1703,
+   "floor": 0.1503,
+   "direction": "higher"
+  },
+  "dev.all.mrr": {
+   "value": 0.7227,
+   "floor": 0.7027,
+   "direction": "higher"
+  },
+  "dev.all.ndcg": {
+   "value": 0.749,
+   "floor": 0.729,
+   "direction": "higher"
+  },
+  "dev.lexical.hit": {
+   "value": 0.9655,
+   "floor": 0.9455,
+   "direction": "higher"
+  },
+  "dev.lexical.recall": {
+   "value": 0.9655,
+   "floor": 0.9455,
+   "direction": "higher"
+  },
+  "dev.lexical.all_required": {
+   "value": 0.9655,
+   "floor": 0.9455,
+   "direction": "higher"
+  },
+  "dev.lexical.precision": {
+   "value": 0.1931,
+   "floor": 0.1731,
+   "direction": "higher"
+  },
+  "dev.lexical.mrr": {
+   "value": 0.8678,
+   "floor": 0.8478,
+   "direction": "higher"
+  },
+  "dev.lexical.ndcg": {
+   "value": 0.8929,
+   "floor": 0.8729,
+   "direction": "higher"
+  },
+  "dev.lifecycle.hit": {
+   "value": 1.0,
+   "floor": 0.98,
+   "direction": "higher"
+  },
+  "dev.lifecycle.recall": {
+   "value": 1.0,
+   "floor": 0.98,
+   "direction": "higher"
+  },
+  "dev.lifecycle.all_required": {
+   "value": 1.0,
+   "floor": 0.98,
+   "direction": "higher"
+  },
+  "dev.lifecycle.precision": {
+   "value": 0.2,
+   "floor": 0.18,
+   "direction": "higher"
+  },
+  "dev.lifecycle.mrr": {
+   "value": 1.0,
+   "floor": 0.98,
+   "direction": "higher"
+  },
+  "dev.lifecycle.ndcg": {
+   "value": 1.0,
+   "floor": 0.98,
+   "direction": "higher"
+  },
+  "dev.multilingual.hit": {
+   "value": 1.0,
+   "floor": 0.98,
+   "direction": "higher"
+  },
+  "dev.multilingual.recall": {
+   "value": 1.0,
+   "floor": 0.98,
+   "direction": "higher"
+  },
+  "dev.multilingual.all_required": {
+   "value": 1.0,
+   "floor": 0.98,
+   "direction": "higher"
+  },
+  "dev.multilingual.precision": {
+   "value": 0.2,
+   "floor": 0.18,
+   "direction": "higher"
+  },
+  "dev.multilingual.mrr": {
+   "value": 1.0,
+   "floor": 0.98,
+   "direction": "higher"
+  },
+  "dev.multilingual.ndcg": {
+   "value": 1.0,
+   "floor": 0.98,
+   "direction": "higher"
+  },
+  "dev.negative.hit": {
+   "value": 0.8333,
+   "floor": 0.8133,
+   "direction": "higher"
+  },
+  "dev.negative.recall": {
+   "value": 0.8333,
+   "floor": 0.8133,
+   "direction": "higher"
+  },
+  "dev.negative.all_required": {
+   "value": 0.8333,
+   "floor": 0.8133,
+   "direction": "higher"
+  },
+  "dev.negative.precision": {
+   "value": 0.8333,
+   "floor": 0.8133,
+   "direction": "higher"
+  },
+  "dev.negative.mrr": {
+   "value": 0.8333,
+   "floor": 0.8133,
+   "direction": "higher"
+  },
+  "dev.negative.ndcg": {
+   "value": 0.8333,
+   "floor": 0.8133,
+   "direction": "higher"
+  },
+  "dev.negative.false_positive_rate": {
+   "value": 0.1667,
+   "floor": 0.1867,
+   "direction": "lower"
+  },
+  "dev.paraphrase.hit": {
+   "value": 0.76,
+   "floor": 0.74,
+   "direction": "higher"
+  },
+  "dev.paraphrase.recall": {
+   "value": 0.76,
+   "floor": 0.74,
+   "direction": "higher"
+  },
+  "dev.paraphrase.all_required": {
+   "value": 0.76,
+   "floor": 0.74,
+   "direction": "higher"
+  },
+  "dev.paraphrase.precision": {
+   "value": 0.152,
+   "floor": 0.132,
+   "direction": "higher"
+  },
+  "dev.paraphrase.mrr": {
+   "value": 0.5984,
+   "floor": 0.5784,
+   "direction": "higher"
+  },
+  "dev.paraphrase.ndcg": {
+   "value": 0.6284,
+   "floor": 0.6084,
+   "direction": "higher"
+  },
+  "dev.relational.hit": {
+   "value": 0.5556,
+   "floor": 0.5356,
+   "direction": "higher"
+  },
+  "dev.relational.recall": {
+   "value": 0.5556,
+   "floor": 0.5356,
+   "direction": "higher"
+  },
+  "dev.relational.all_required": {
+   "value": 0.7778,
+   "floor": 0.7578,
+   "direction": "higher"
+  },
+  "dev.relational.precision": {
+   "value": 0.1111,
+   "floor": 0.0911,
+   "direction": "higher"
+  },
+  "dev.relational.mrr": {
+   "value": 0.2611,
+   "floor": 0.2411,
+   "direction": "higher"
+  },
+  "dev.relational.ndcg": {
+   "value": 0.3137,
+   "floor": 0.2937,
+   "direction": "higher"
+  },
+  "dev.title.hit": {
+   "value": 1.0,
+   "floor": 0.98,
+   "direction": "higher"
+  },
+  "dev.title.recall": {
+   "value": 1.0,
+   "floor": 0.98,
+   "direction": "higher"
+  },
+  "dev.title.all_required": {
+   "value": 1.0,
+   "floor": 0.98,
+   "direction": "higher"
+  },
+  "dev.title.precision": {
+   "value": 0.2,
+   "floor": 0.18,
+   "direction": "higher"
+  },
+  "dev.title.mrr": {
+   "value": 1.0,
+   "floor": 0.98,
+   "direction": "higher"
+  },
+  "dev.title.ndcg": {
+   "value": 1.0,
+   "floor": 0.98,
+   "direction": "higher"
+  },
+  "heldout.all.hit": {
+   "value": 0.8235,
+   "floor": 0.8035,
+   "direction": "higher"
+  },
+  "heldout.all.recall": {
+   "value": 0.8235,
+   "floor": 0.8035,
+   "direction": "higher"
+  },
+  "heldout.all.all_required": {
+   "value": 0.8235,
+   "floor": 0.8035,
+   "direction": "higher"
+  },
+  "heldout.all.precision": {
+   "value": 0.1647,
+   "floor": 0.1447,
+   "direction": "higher"
+  },
+  "heldout.all.mrr": {
+   "value": 0.7155,
+   "floor": 0.6955,
+   "direction": "higher"
+  },
+  "heldout.all.ndcg": {
+   "value": 0.7352,
+   "floor": 0.7152,
+   "direction": "higher"
+  },
+  "heldout.lexical.hit": {
+   "value": 0.9355,
+   "floor": 0.9155,
+   "direction": "higher"
+  },
+  "heldout.lexical.recall": {
+   "value": 0.9355,
+   "floor": 0.9155,
+   "direction": "higher"
+  },
+  "heldout.lexical.all_required": {
+   "value": 0.9355,
+   "floor": 0.9155,
+   "direction": "higher"
+  },
+  "heldout.lexical.precision": {
+   "value": 0.1871,
+   "floor": 0.1671,
+   "direction": "higher"
+  },
+  "heldout.lexical.mrr": {
+   "value": 0.793,
+   "floor": 0.773,
+   "direction": "higher"
+  },
+  "heldout.lexical.ndcg": {
+   "value": 0.8253,
+   "floor": 0.8053,
+   "direction": "higher"
+  },
+  "heldout.lifecycle.hit": {
+   "value": 1.0,
+   "floor": 0.98,
+   "direction": "higher"
+  },
+  "heldout.lifecycle.recall": {
+   "value": 1.0,
+   "floor": 0.98,
+   "direction": "higher"
+  },
+  "heldout.lifecycle.all_required": {
+   "value": 1.0,
+   "floor": 0.98,
+   "direction": "higher"
+  },
+  "heldout.lifecycle.precision": {
+   "value": 0.2,
+   "floor": 0.18,
+   "direction": "higher"
+  },
+  "heldout.lifecycle.mrr": {
+   "value": 1.0,
+   "floor": 0.98,
+   "direction": "higher"
+  },
+  "heldout.lifecycle.ndcg": {
+   "value": 1.0,
+   "floor": 0.98,
+   "direction": "higher"
+  },
+  "heldout.multilingual.hit": {
+   "value": 1.0,
+   "floor": 0.98,
+   "direction": "higher"
+  },
+  "heldout.multilingual.recall": {
+   "value": 1.0,
+   "floor": 0.98,
+   "direction": "higher"
+  },
+  "heldout.multilingual.all_required": {
+   "value": 1.0,
+   "floor": 0.98,
+   "direction": "higher"
+  },
+  "heldout.multilingual.precision": {
+   "value": 0.2,
+   "floor": 0.18,
+   "direction": "higher"
+  },
+  "heldout.multilingual.mrr": {
+   "value": 1.0,
+   "floor": 0.98,
+   "direction": "higher"
+  },
+  "heldout.multilingual.ndcg": {
+   "value": 1.0,
+   "floor": 0.98,
+   "direction": "higher"
+  },
+  "heldout.negative.hit": {
+   "value": 0.8333,
+   "floor": 0.8133,
+   "direction": "higher"
+  },
+  "heldout.negative.recall": {
+   "value": 0.8333,
+   "floor": 0.8133,
+   "direction": "higher"
+  },
+  "heldout.negative.all_required": {
+   "value": 0.8333,
+   "floor": 0.8133,
+   "direction": "higher"
+  },
+  "heldout.negative.precision": {
+   "value": 0.8333,
+   "floor": 0.8133,
+   "direction": "higher"
+  },
+  "heldout.negative.mrr": {
+   "value": 0.8333,
+   "floor": 0.8133,
+   "direction": "higher"
+  },
+  "heldout.negative.ndcg": {
+   "value": 0.8333,
+   "floor": 0.8133,
+   "direction": "higher"
+  },
+  "heldout.negative.false_positive_rate": {
+   "value": 0.1667,
+   "floor": 0.1867,
+   "direction": "lower"
+  },
+  "heldout.paraphrase.hit": {
+   "value": 0.6,
+   "floor": 0.58,
+   "direction": "higher"
+  },
+  "heldout.paraphrase.recall": {
+   "value": 0.6,
+   "floor": 0.58,
+   "direction": "higher"
+  },
+  "heldout.paraphrase.all_required": {
+   "value": 0.6,
+   "floor": 0.58,
+   "direction": "higher"
+  },
+  "heldout.paraphrase.precision": {
+   "value": 0.12,
+   "floor": 0.1,
+   "direction": "higher"
+  },
+  "heldout.paraphrase.mrr": {
+   "value": 0.5367,
+   "floor": 0.5167,
+   "direction": "higher"
+  },
+  "heldout.paraphrase.ndcg": {
+   "value": 0.5324,
+   "floor": 0.5124,
+   "direction": "higher"
+  },
+  "heldout.relational.hit": {
+   "value": 0.6,
+   "floor": 0.58,
+   "direction": "higher"
+  },
+  "heldout.relational.recall": {
+   "value": 0.6,
+   "floor": 0.58,
+   "direction": "higher"
+  },
+  "heldout.relational.all_required": {
+   "value": 0.6,
+   "floor": 0.58,
+   "direction": "higher"
+  },
+  "heldout.relational.precision": {
+   "value": 0.12,
+   "floor": 0.1,
+   "direction": "higher"
+  },
+  "heldout.relational.mrr": {
+   "value": 0.2667,
+   "floor": 0.2467,
+   "direction": "higher"
+  },
+  "heldout.relational.ndcg": {
+   "value": 0.3524,
+   "floor": 0.3324,
+   "direction": "higher"
+  },
+  "heldout.title.hit": {
+   "value": 1.0,
+   "floor": 0.98,
+   "direction": "higher"
+  },
+  "heldout.title.recall": {
+   "value": 1.0,
+   "floor": 0.98,
+   "direction": "higher"
+  },
+  "heldout.title.all_required": {
+   "value": 1.0,
+   "floor": 0.98,
+   "direction": "higher"
+  },
+  "heldout.title.precision": {
+   "value": 0.2,
+   "floor": 0.18,
+   "direction": "higher"
+  },
+  "heldout.title.mrr": {
+   "value": 1.0,
+   "floor": 0.98,
+   "direction": "higher"
+  },
+  "heldout.title.ndcg": {
+   "value": 1.0,
+   "floor": 0.98,
+   "direction": "higher"
+  }
+ }
+}

@@ -71,7 +71,7 @@ class TestIngest:
         topic_text = report.topic_note.read_text(encoding="utf-8")
         assert parse_note(topic_text).meta["type"] == "topic"
         assert "Agents are eating software" in topic_text
-        assert "[[" in topic_text  # wiki links to sources
+        assert "](../sources/" in topic_text  # OKF §6.1 links to sources
 
         source_meta = parse_note(
             report.source_notes[0].read_text(encoding="utf-8")
@@ -779,8 +779,8 @@ class TestIngestNotes:
             "Lesson learned body.\n",
             encoding="utf-8",
         )
-        written, skipped = ingest_notes(extra, brain)
-        assert len(written) == 2 and not skipped
+        report = ingest_notes(extra, brain)
+        assert len(report.written) == 2 and not report.skipped
         sources = notes_in(brain / "notes" / "sources")
         assert len(sources) == 3  # 2 from project + 1 fresh; shared URL merged
         merged = next(p for p in sources if "reddit" in p.read_text(encoding="utf-8"))
@@ -801,13 +801,13 @@ class TestIngestNotes:
         (d / "meta-only.md").write_text(
             "---\nfoo: bar\n---\n\nBody.\n", encoding="utf-8"
         )
-        written, skipped = ingest_notes(d, brain)
-        assert len(written) == 1
+        report = ingest_notes(d, brain)
+        assert len(report.written) == 1
         assert (brain / "notes" / "imported" / "team-lesson.md").is_file()
-        assert skipped == [
-            "bare.md: no provenance frontmatter (need url/project/title)",
-            "meta-only.md: no provenance frontmatter (need url/project/title)",
-        ]
+        reason = (
+            "no provenance frontmatter (need url/project/source/derived_from/author)"
+        )
+        assert report.skipped == [f"bare.md: {reason}", f"meta-only.md: {reason}"]
 
     def test_imported_note_without_project_cites_note_path(
         self, tmp_path: Path, capsys: pytest.CaptureFixture[str]

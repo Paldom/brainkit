@@ -1,0 +1,14 @@
+{
+ "topic": "Survey and technical evaluation of production-grade open-source GitHub implementations replicating Karpathy-style second brain systems.",
+ "meta_summary": "*Meta-summarization failed: codex exec failed (exit 1): ease log in again.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": null,\n    \"code\": \"refresh_token_invalidated\"\n  }\n}\n2026-10-19T21:29:31.921125Z ERROR codex_api::endpoint::responses_websocket: failed to connect to websocket: HTTP error: 401 Unauthorized, url: wss://chatgpt.com/backend-api/codex/responses\n2026-10-19T21:29:32.193665Z ERROR codex_api::endpoint::responses_websocket: failed to connect to websocket: HTTP error: 401 Unauthorized, url: wss://chatgpt.com/backend-api/codex/responses*",
+ "keywords": [],
+ "synthesized_keywords": [
+  "Karpathy LLM Wiki open-source implementations 2026",
+  "llm-wiki GitHub repositories comparison",
+  "Karpathy second brain Obsidian Claude Code",
+  "nashsu/llm_wiki vs lucasastorian/llmwiki",
+  "awesome-llm-wiki karpathy-llm-wiki topic 2026",
+  "\"Karpathy LLM wiki\" GitHub implementations 2026",
+  "Karpathy LLM wiki vs RAG benchmark"
+ ]
+}

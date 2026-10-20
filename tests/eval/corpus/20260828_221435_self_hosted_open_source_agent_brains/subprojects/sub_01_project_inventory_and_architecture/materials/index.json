@@ -1,0 +1,351 @@
+{
+ "topic": "Project inventory and architecture comparison of self-hosted / open-source agent brain and memory systems as of 2026 — gbrain, Letta (MemGPT), Sylph, mem0, Zep, Cognee, Basic Memory, Khoj and peers — with license, storage backend, retrieval design, maturity and activity signals for each.",
+ "generated_at": "2026-08-28T20:45:08+00:00",
+ "total_cited": 358,
+ "fetched": 318,
+ "attempted": 329,
+ "entries": [
+  {
+   "url": "https://fountaincity.tech/resources/blog/agent-memory-knowledge-systems-compared/",
+   "status": "fetched",
+   "origin": "http",
+   "file": "001-fountaincitytech-agent-memory-8-knowledge-systems-compared.md",
+   "final_url": "https://fountaincity.tech/resources/blog/agent-memory-knowledge-systems-compared/",
+   "title": "Agent Memory: 8 Knowledge Systems Compared for Production AI Agents (2026)",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 29709
+  },
+  {
+   "url": "https://vectorize.io/articles/best-ai-agent-memory-systems",
+   "status": "fetched",
+   "origin": "http",
+   "file": "002-vectorizeio-best-ai-agent-memory-systems-in-2026-8.md",
+   "final_url": "https://vectorize.io/articles/best-ai-agent-memory-systems",
+   "title": "Best AI Agent Memory Systems in 2026: 8 Frameworks Compared",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 47979
+  },
+  {
+   "url": "https://atlan.com/know/best-ai-agent-memory-frameworks-2026/",
+   "status": "fetched",
+   "origin": "http",
+   "file": "003-atlancom-best-ai-agent-memory-frameworks-in-2026-compared.md",
+   "final_url": "https://atlan.com/know/best-ai-agent-memory-frameworks-2026/",
+   "title": "Best AI Agent Memory Frameworks in 2026: Compared and Ranked",
+   "source_type": "social",
+   "providers": [
+    "brave",
+    "kimi"
+   ],
+   "chars": 52208
+  },
+  {
+   "url": "https://tryxlr8.ai/blogs/best-open-source-ai-memory-frameworks-2026",
+   "status": "fetched",
+   "origin": "http",
+   "file": "004-tryxlr8ai-best-open-source-ai-memory-frameworks-2026-cognee.md",
+   "final_url": "https://tryxlr8.ai/blogs/best-open-source-ai-memory-frameworks-2026",
+   "title": "Best Open-Source AI Memory Frameworks 2026 | Cognee | XLR8 AI",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 29246
+  },
+  {
+   "url": "https://www.braintrust.dev/articles/best-ai-agent-memory-tools-2026",
+   "status": "fetched",
+   "origin": "http",
+   "file": "005-braintrustdev-best-ai-agent-memory-tools-in-2026-articles.md",
+   "final_url": "https://www.braintrust.dev/articles/best-ai-agent-memory-tools-2026",
+   "title": "Best AI agent memory tools in 2026 - Articles - Braintrust",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 17740
+  },
+  {
+   "url": "https://menuagentic.com/blogs/mem0-vs-letta-vs-zep-vs-cognee/",
+   "status": "fetched",
+   "origin": "http",
+   "file": "006-menuagenticcom-mem0-vs-letta-vs-zep-vs-cognee-four-bets-on.md",
+   "final_url": "https://menuagentic.com/blogs/mem0-vs-letta-vs-zep-vs-cognee/",
+   "title": "Mem0 vs Letta vs Zep vs Cognee: Four Bets on What \"Agent Memory\" Actually Means — AI Blog",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 25914
+  },
+  {
+   "url": "https://evermind.ai/blogs/letta-alternative",
+   "status": "fetched",
+   "origin": "http",
+   "file": "007-evermindai-best-letta-alternatives-for-ai-agent-memory-in.md",
+   "final_url": "https://evermind.ai/blogs/letta-alternative",
+   "title": "Best Letta Alternatives for AI Agent Memory in 2026: A Comprehensive Comparison - EverMind AI Long-Term Memory System Updates & Breakthroughs | EverMind Blog",
+   "source_type": "social",
+   "providers": [
+    "brave",
+    "gemini",
+    "tavily"
+   ],
+   "chars": 23977
+  },
+  {
+   "url": "https://niteagent.com/blog/ai-agent-memory-comparison-2026/",
+   "status": "fetched",
+   "origin": "http",
+   "file": "008-niteagentcom-mem0-vs-zep-vs-langmem-vs-letta-ai-agent.md",
+   "final_url": "https://niteagent.com/blog/ai-agent-memory-comparison-2026/",
+   "title": "Mem0 vs Zep vs LangMem vs Letta: AI Agent Memory Showdown 2026",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 12258
+  },
+  {
+   "url": "https://vectorize.io/articles/gbrain-alternatives",
+   "status": "fetched",
+   "origin": "http",
+   "file": "009-vectorizeio-gbrain-alternatives-5-best-agent-memory-systems.md",
+   "final_url": "https://vectorize.io/articles/gbrain-alternatives",
+   "title": "GBrain Alternatives: 5 Best Agent Memory Systems - Vectorize.io",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 18561
+  },
+  {
+   "url": "https://techsy.io/en/blog/best-ai-agent-memory-tools",
+   "status": "fetched",
+   "origin": "http",
+   "file": "010-techsyio-9-ai-agent-memory-tools-mem0-alternatives-2026.md",
+   "final_url": "https://techsy.io/en/blog/best-ai-agent-memory-tools",
+   "title": "9 AI Agent Memory Tools & Mem0 Alternatives (2026) | TECHSY",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 41965
+  },
+  {
+   "url": "https://www.digitalapplied.com/blog/open-source-agent-memory-mem0-letta-zep-compared",
+   "status": "fetched",
+   "origin": "http",
+   "file": "011-digitalappliedcom-open-source-agent-memory-mem0-vs-letta-vs.md",
+   "final_url": "https://www.digitalapplied.com/blog/open-source-agent-memory-mem0-letta-zep-compared",
+   "title": "Open-Source Agent Memory: Mem0 vs Letta vs Zep Compared",
+   "source_type": "social",
+   "providers": [
+    "brave",
+    "exa",
+    "site:exa"
+   ],
+   "chars": 36551
+  },
+  {
+   "url": "https://mnemoverse.com/docs/library/ai-memory-solutions-2026-q3",
+   "status": "fetched",
+   "origin": "http",
+   "file": "012-mnemoversecom-mem0-vs-zep-vs-letta-vs-cognee-vs-supermemory.md",
+   "final_url": "https://mnemoverse.com/docs/library/ai-memory-solutions-2026-q3",
+   "title": "Mem0 vs Zep vs Letta vs Cognee vs Supermemory (Q3 2026) | Mnemoverse Docs",
+   "source_type": "social",
+   "providers": [
+    "brave",
+    "grok",
+    "tavily"
+   ],
+   "chars": 27980
+  },
+  {
+   "url": "https://www.getfeather.store/theory/ai-agent-memory-frameworks-landscape-2026",
+   "status": "fetched",
+   "origin": "http",
+   "file": "013-getfeatherstore-the-ai-agent-memory-landscape-in-2026.md",
+   "final_url": "https://www.getfeather.store/theory/ai-agent-memory-frameworks-landscape-2026",
+   "title": "The AI Agent Memory Landscape in 2026: Mapping Mem0, Zep, Letta, Cognee, and Where Embedded Engines Fit — Feather DB",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 11836
+  },
+  {
+   "url": "https://mcp.directory/blog/mem0-vs-letta-vs-zep-vs-cognee-2026",
+   "status": "fetched",
+   "origin": "http",
+   "file": "014-mcpdirectory-best-ai-agent-memory-2026-mem0-vs-letta-vs-zep.md",
+   "final_url": "https://mcp.directory/blog/mem0-vs-letta-vs-zep-vs-cognee-2026",
+   "title": "Best AI Agent Memory 2026: Mem0 vs Letta vs Zep vs Cognee — MCP.Directory",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 38940
+  },
+  {
+   "url": "https://vectorize.io/articles/gbrain-vs-hindsight-vs-mem0-vs-zep",
+   "status": "fetched",
+   "origin": "http",
+   "file": "015-vectorizeio-gbrain-vs-hindsight-vs-mem0-vs-zep-memory.md",
+   "final_url": "https://vectorize.io/articles/gbrain-vs-hindsight-vs-mem0-vs-zep",
+   "title": "GBrain vs Hindsight vs Mem0 vs Zep: Memory Compared",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 18640
+  },
+  {
+   "url": "https://dev.to/izgorodin/mem0-vs-zep-vs-letta-vs-cognee-vs-langmem-vs-mnemoverse-an-honest-map-of-agent-memory-in-2026-3l7b",
+   "status": "fetched",
+   "origin": "http",
+   "file": "016-devto-mem0-vs-zep-vs-letta-vs-cognee-vs-langmem-vs.md",
+   "final_url": "https://dev.to/izgorodin/mem0-vs-zep-vs-letta-vs-cognee-vs-langmem-vs-mnemoverse-an-honest-map-of-agent-memory-in-2026-3l7b",
+   "title": "Mem0 vs Zep vs Letta vs Cognee vs LangMem vs Mnemoverse: An Honest Map of Agent Memory in 2026 - DEV Community",
+   "source_type": "social",
+   "providers": [
+    "brave",
+    "exa",
+    "site:exa"
+   ],
+   "chars": 10923
+  },
+  {
+   "url": "https://explore.n1n.ai/blog/ai-agent-memory-comparison-2026-mem0-zep-letta-cognee-2026-04-23",
+   "status": "fetched",
+   "origin": "http",
+   "file": "017-exploren1nai-comparison-of-ai-agent-memory-systems-in-2026.md",
+   "final_url": "https://explore.n1n.ai/blog/ai-agent-memory-comparison-2026-mem0-zep-letta-cognee-2026-04-23",
+   "title": "Comparison of AI Agent Memory Systems in 2026 Mem0 vs Zep vs Letta vs Cognee | Enterprise Unified LLM API Gateway (One Key for All Models) | n1n.ai",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 7267
+  },
+  {
+   "url": "https://evermind.ai/blogs/best-open-source-agent-memory-frameworks-2026",
+   "status": "fetched",
+   "origin": "http",
+   "file": "018-evermindai-best-open-source-agent-memory-frameworks-2026.md",
+   "final_url": "https://evermind.ai/blogs/best-open-source-agent-memory-frameworks-2026",
+   "title": "Best Open Source Agent Memory Frameworks 2026 - EverMind AI Long-Term Memory System Updates & Breakthroughs | EverMind Blog",
+   "source_type": "social",
+   "providers": [
+    "brave",
+    "kimi"
+   ],
+   "chars": 25898
+  },
+  {
+   "url": "https://blog.devgenius.io/ai-agent-memory-systems-in-2026-mem0-zep-hindsight-memvid-and-everything-in-between-compared-96e35b818da8?gi=2c35c1b11761",
+   "status": "fetched",
+   "origin": "http",
+   "file": "019-blogdevgeniusio-ai-agent-memory-systems-in-2026-mem0-zep.md",
+   "final_url": "https://blog.devgenius.io/ai-agent-memory-systems-in-2026-mem0-zep-hindsight-memvid-and-everything-in-between-compared-96e35b818da8?gi=ebfe2f2f74cf",
+   "title": "AI Agent Memory Systems in 2026: Mem0, Zep, Hindsight, Memvid and Everything In Between — Compared | by Yogesh Yadav | Dev Genius",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 19620
+  },
+  {
+   "url": "https://particula.tech/blog/agent-memory-frameworks-tested-mem0-zep-letta-cognee-2026",
+   "status": "fetched",
+   "origin": "http",
+   "file": "020-particulatech-mem0-vs-zep-vs-letta-vs-cognee-which-to-use.md",
+   "final_url": "https://particula.tech/blog/agent-memory-frameworks-tested-mem0-zep-letta-cognee-2026",
+   "title": "Mem0 vs Zep vs Letta vs Cognee: Which to Use in 2026",
+   "source_type": "social",
+   "providers": [
+    "brave",
+    "exa",
+    "gemini",
+    "site:exa"
+   ],
+   "chars": 27172
+  },
+  {
+   "url": "https://github.com/TeleAI-UAGI/Awesome-Agent-Memory",
+   "status": "fetched",
+   "origin": "http",
+   "file": "021-githubcom-github-teleai-uagiawesome-agent-memory-curated.md",
+   "final_url": "https://github.com/TeleAI-UAGI/Awesome-Agent-Memory",
+   "title": "GitHub - TeleAI-UAGI/Awesome-Agent-Memory: Curated systems, benchmarks, and papers etc. on memory for LLMs/MLLMs --- long-term context, retrieval, and reasoning. · GitHub",
+   "source_type": "web",
+   "providers": [
+    "brave"
+   ],
+   "chars": 2397
+  },
+  {
+   "url": "https://github.com/vornicx/ai-memory-comparison",
+   "status": "fetched",
+   "origin": "http",
+   "file": "022-githubcom-vornicxai-memory-comparison.md",
+   "final_url": "https://github.com/vornicx/ai-memory-comparison",
+   "title": "vornicx/ai-memory-comparison",
+   "source_type": "social",
+   "providers": [
+    "exa"
+   ],
+   "chars": 5465
+  },
+  {
+   "url": "https://theaiengineer.substack.com/p/cognee-vs-zep-vs-mem0-vs-letta",
+   "status": "fetched",
+   "origin": "http",
+   "file": "023-theaiengineersubstackcom-cognee-vs-zep-vs-mem0-vs-letta-by.md",
+   "final_url": "https://theaiengineer.substack.com/p/cognee-vs-zep-vs-mem0-vs-letta",
+   "title": "cognee vs Zep vs Mem0 vs Letta - by Paolo Perrone",
+   "source_type": "social",
+   "providers": [
+    "exa",
+    "grok",
+    "kimi",
+    "site:exa"
+   ],
+   "chars": 20706
+  },
+  {
+   "url": "https://dev.to/paulholland511/eidetic-os-vs-mem0-vs-letta-vs-khoj-choosing-an-ai-memory-layer-in-2026-37a3",
+   "status": "fetched",
+   "origin": "http",
+   "file": "024-devto-eidetic-os-vs-mem0-vs-letta-vs-khoj-choosing-an-ai.md",
+   "final_url": "https://dev.to/paulholland511/eidetic-os-vs-mem0-vs-letta-vs-khoj-choosing-an-ai-memory-layer-in-2026-37a3",
+   "title": "Eidetic OS vs Mem0 vs Letta vs Khoj — Choosing an AI Memory Layer in 2026 - DEV Community",
+   "source_type": "social",
+   "providers": [
+    "exa"
+   ],
+   "chars": 5480
+  },
+  {
+   "url": "https://www.linkedin.com/pulse/best-open-source-agent-memory-systems-self-hosted-2026-vectorizeio-2lfhc",
+   "status": "fetched",
+   "origin": "http",
+   "file": "025-linkedincom-best-open-source-agent-memory-systems-self.md",
+   "final_url": "https://www.linkedin.com/pulse/best-open-source-agent-memory-systems-self-hosted-2026-vectorizeio-2lfhc",
+   "title": "Best Open-Source Agent Memory Systems (Self-Hosted, 2026)",
+   "source_type": "social",
+   "providers": [
+    "exa",
+    "tavily"
+   ],
+   "chars": 17201
+  }
+ ]
+}

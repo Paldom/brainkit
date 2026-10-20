@@ -1,0 +1,339 @@
+{
+ "topic": "Memory architecture patterns and their measured trade-offs: hierarchical/paged context, vector RAG, knowledge graphs, plain-file/git stores, background consolidation — including retrieval quality, cost, and failure modes like context rot and memory poisoning.",
+ "generated_at": "2026-08-28T20:57:21+00:00",
+ "total_cited": 368,
+ "fetched": 291,
+ "attempted": 348,
+ "entries": [
+  {
+   "url": "https://mem0.ai/blog/what-is-ai-agent-memory",
+   "status": "fetched",
+   "origin": "http",
+   "file": "004-mem0ai-the-architecture-of-remembrance-architectures-vector.md",
+   "final_url": "https://mem0.ai/blog/what-is-ai-agent-memory",
+   "title": "The Architecture of Remembrance: Architectures, Vector Stores, and GraphRAG",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 17255
+  },
+  {
+   "url": "https://atlan.com/know/agent-memory-architectures/",
+   "status": "fetched",
+   "origin": "http",
+   "file": "005-atlancom-agent-memory-architectures-5-patterns-and-trade.md",
+   "final_url": "https://atlan.com/know/agent-memory-architectures/",
+   "title": "Agent Memory Architectures: 5 Patterns and Trade-offs",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 39886
+  },
+  {
+   "url": "https://blogs.oracle.com/developers/from-rag-to-memory-systems-building-stateful-ai-architecture",
+   "status": "fetched",
+   "origin": "summary",
+   "file": "006-blogsoraclecom-from-rag-to-ai-memory-systems-building.md",
+   "title": "From RAG to AI Memory Systems: Building Stateful Architectures for Durable, Context-Aware Agents",
+   "source_type": "social",
+   "providers": [
+    "brave",
+    "site:exa"
+   ],
+   "chars": 10777
+  },
+  {
+   "url": "https://medium.com/@Micheal-Lanham/knowledge-and-memory-beyond-rag-why-2026-agents-need-a-write-path-not-just-a-retriever-ae2547b7ffe9",
+   "status": "fetched",
+   "origin": "http",
+   "file": "007-mediumcom-knowledge-and-memory-beyond-rag-why-2026-agents.md",
+   "final_url": "https://medium.com/@Micheal-Lanham/knowledge-and-memory-beyond-rag-why-2026-agents-need-a-write-path-not-just-a-retriever-ae2547b7ffe9",
+   "title": "Knowledge and Memory Beyond RAG: Why 2026 Agents Need a Write Path, Not Just a Retriever | by Micheal Lanham | Apr, 2026 | Medium",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 21222
+  },
+  {
+   "url": "https://zylos.ai/research/2026-04-05-ai-agent-memory-architectures-persistent-knowledge/",
+   "status": "fetched",
+   "origin": "http",
+   "file": "008-zylosai-ai-agent-memory-architectures-from-context-windows.md",
+   "final_url": "https://zylos.ai/research/2026-04-05-ai-agent-memory-architectures-persistent-knowledge/",
+   "title": "AI Agent Memory Architectures: From Context Windows to Persistent Knowledge | Zylos Research",
+   "source_type": "social",
+   "providers": [
+    "brave",
+    "gemini",
+    "grok"
+   ],
+   "chars": 34731
+  },
+  {
+   "url": "https://vectorize.io/articles/best-ai-agent-memory-systems",
+   "status": "fetched",
+   "origin": "http",
+   "file": "009-vectorizeio-best-ai-agent-memory-systems-in-2026-8.md",
+   "final_url": "https://vectorize.io/articles/best-ai-agent-memory-systems",
+   "title": "Best AI Agent Memory Systems in 2026: 8 Frameworks Compared",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 47979
+  },
+  {
+   "url": "https://atlan.com/know/ai-memory-vs-rag-vs-knowledge-graph/",
+   "status": "fetched",
+   "origin": "http",
+   "file": "010-atlancom-ai-memory-vs-rag-vs-knowledge-graph-enterprise.md",
+   "final_url": "https://atlan.com/know/ai-memory-vs-rag-vs-knowledge-graph/",
+   "title": "AI Memory vs RAG vs Knowledge Graph: Enterprise Guide 2026",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 35786
+  },
+  {
+   "url": "https://atlan.com/know/agentic-ai-memory-vs-vector-database/",
+   "status": "fetched",
+   "origin": "http",
+   "file": "011-atlancom-agentic-ai-memory-vs-vector-database-architecture.md",
+   "final_url": "https://atlan.com/know/agentic-ai-memory-vs-vector-database/",
+   "title": "Agentic AI Memory vs Vector Database: Architecture Guide 2026",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 35317
+  },
+  {
+   "url": "https://fountaincity.tech/resources/blog/agent-memory-knowledge-systems-compared/",
+   "status": "fetched",
+   "origin": "http",
+   "file": "012-fountaincitytech-agent-memory-8-knowledge-systems-compared.md",
+   "final_url": "https://fountaincity.tech/resources/blog/agent-memory-knowledge-systems-compared/",
+   "title": "Agent Memory: 8 Knowledge Systems Compared for Production AI Agents (2026)",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 29709
+  },
+  {
+   "url": "https://arxiv.org/html/2603.11768v1",
+   "status": "fetched",
+   "origin": "http",
+   "file": "013-arxivorg-governing-evolving-memory-in-llm-agents-risks.md",
+   "final_url": "https://arxiv.org/html/2603.11768v1",
+   "title": "Governing Evolving Memory in LLM Agents: Risks, Mechanisms, and the Stability and Safety Governed Memory (SSGM) Framework",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 60831
+  },
+  {
+   "url": "https://serokell.io/blog/design-patterns-for-long-term-memory-in-llm-powered-architectures",
+   "status": "fetched",
+   "origin": "http",
+   "file": "014-serokellio-design-patterns-for-long-term-memory-in-llm.md",
+   "final_url": "https://serokell.io/blog/design-patterns-for-long-term-memory-in-llm-powered-architectures",
+   "title": "Design Patterns for Long-Term Memory in LLM-Powered Architectures",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 19834
+  },
+  {
+   "url": "https://mem0.ai/blog/state-of-ai-agent-memory-2026",
+   "status": "fetched",
+   "origin": "http",
+   "file": "015-mem0ai-state-of-ai-agent-memory-2026-benchmarks-trends.md",
+   "final_url": "https://mem0.ai/blog/state-of-ai-agent-memory-2026",
+   "title": "State of AI Agent Memory 2026: Benchmarks & Trends Report",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 28268
+  },
+  {
+   "url": "https://www.digitalapplied.com/blog/agent-memory-architectures-vector-graph-episodic",
+   "status": "fetched",
+   "origin": "http",
+   "file": "016-digitalappliedcom-agent-memory-architectures-vector-vs.md",
+   "final_url": "https://www.digitalapplied.com/blog/agent-memory-architectures-vector-graph-episodic",
+   "title": "Agent Memory Architectures: Vector vs Graph vs Episodic",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 21537
+  },
+  {
+   "url": "https://zylos.ai/research/2026-04-14-agent-native-data-layer-hybrid-storage-architectures",
+   "status": "fetched",
+   "origin": "http",
+   "file": "017-zylosai-agent-native-data-layers-hybrid-storage.md",
+   "final_url": "https://zylos.ai/research/2026-04-14-agent-native-data-layer-hybrid-storage-architectures/",
+   "title": "Agent-Native Data Layers: Hybrid Storage Architectures for Stateful AI Agents | Zylos Research",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 22142
+  },
+  {
+   "url": "https://blog.sandbase.ai/agent-memory-architectures-compared-2026/",
+   "status": "fetched",
+   "origin": "http",
+   "file": "018-blogsandbaseai-agent-memory-architectures-vector-graph.md",
+   "final_url": "https://blog.sandbase.ai/agent-memory-architectures-compared-2026/",
+   "title": "Agent Memory Architectures: Vector, Graph & Episodic | SandBase Blog",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 17640
+  },
+  {
+   "url": "https://arxiv.org/html/2604.22085v1",
+   "status": "fetched",
+   "origin": "http",
+   "file": "019-arxivorg-memanto-typed-semantic-memory-with-information.md",
+   "final_url": "https://arxiv.org/html/2604.22085v1",
+   "title": "Memanto: Typed Semantic Memory with Information-Theoretic Retrieval for Long-Horizon Agents",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 64185
+  },
+  {
+   "url": "https://shibuiyusuke.medium.com/graph-based-agent-memory-a-complete-guide-to-structure-retrieval-and-evolution-6f91637ad078",
+   "status": "fetched",
+   "origin": "http",
+   "file": "020-shibuiyusukemediumcom-graph-based-agent-memory-a-complete.md",
+   "final_url": "https://shibuiyusuke.medium.com/graph-based-agent-memory-a-complete-guide-to-structure-retrieval-and-evolution-6f91637ad078",
+   "title": "Graph-Based Agent Memory: A Complete Guide to Structure, Retrieval, and Evolution | by Shibui Yusuke | Medium",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 26985
+  },
+  {
+   "url": "https://mem0.ai/blog/graph-memory-solutions-ai-agents",
+   "status": "fetched",
+   "origin": "http",
+   "file": "021-mem0ai-graph-based-memory-solutions-for-ai-context-top-5.md",
+   "final_url": "https://mem0.ai/blog/graph-memory-solutions-ai-agents",
+   "title": "Graph-Based Memory Solutions for AI Context: Top 5 Compared (January 2026)",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 21486
+  },
+  {
+   "url": "https://www.getfeather.store/theory/ai-agent-memory-frameworks-landscape-2026",
+   "status": "fetched",
+   "origin": "http",
+   "file": "022-getfeatherstore-the-ai-agent-memory-landscape-in-2026.md",
+   "final_url": "https://www.getfeather.store/theory/ai-agent-memory-frameworks-landscape-2026",
+   "title": "The AI Agent Memory Landscape in 2026: Mapping Mem0, Zep, Letta, Cognee, and Where Embedded Engines Fit — Feather DB",
+   "source_type": "web",
+   "providers": [
+    "brave"
+   ],
+   "chars": 11836
+  },
+  {
+   "url": "https://arxiv.org/html/2606.00610v1",
+   "status": "fetched",
+   "origin": "http",
+   "file": "023-arxivorg-memgraphrag-memory-based-multi-agent-system-for.md",
+   "final_url": "https://arxiv.org/html/2606.00610v1",
+   "title": "MemGraphRAG: Memory-based Multi-Agent System for Graph Retrieval-Augmented Generation",
+   "source_type": "web",
+   "providers": [
+    "brave",
+    "gemini"
+   ],
+   "chars": 93415
+  },
+  {
+   "url": "https://mem0.ai/blog/long-term-memory-ai-agents",
+   "status": "fetched",
+   "origin": "http",
+   "file": "024-mem0ai-long-term-memory-for-ai-agents-the-what-why-and-how.md",
+   "final_url": "https://mem0.ai/blog/long-term-memory-ai-agents",
+   "title": "Long-Term Memory for AI Agents: The What, Why and How",
+   "source_type": "web",
+   "providers": [
+    "brave"
+   ],
+   "chars": 16965
+  },
+  {
+   "url": "https://aithinkerlab.com/build-rag-systems-2026-architecture-patterns/",
+   "status": "fetched",
+   "origin": "http",
+   "file": "025-aithinkerlabcom-how-to-build-rag-systems-in-2026-8.md",
+   "final_url": "https://aithinkerlab.com/build-rag-systems-2026-architecture-patterns/",
+   "title": "How to Build RAG Systems in 2026: 8 Architecture Patterns",
+   "source_type": "web",
+   "providers": [
+    "brave"
+   ],
+   "chars": 20290
+  },
+  {
+   "url": "https://towardsdatascience.com/vector-rag-isnt-enough-i-built-a-context-graph-layer-for-multi-agent-memory/",
+   "status": "fetched",
+   "origin": "http",
+   "file": "026-towardsdatasciencecom-vector-rag-isnt-enough-i-built-a.md",
+   "final_url": "https://towardsdatascience.com/vector-rag-isnt-enough-i-built-a-context-graph-layer-for-multi-agent-memory/",
+   "title": "Vector RAG Isn’t Enough — I Built a Context Graph Layer for Multi-Agent Memory | Towards Data Science",
+   "source_type": "web",
+   "providers": [
+    "brave",
+    "exa"
+   ],
+   "chars": 29034
+  },
+  {
+   "url": "https://www.falkordb.com/blog/ai-agent-memory-retrieval-architecture/",
+   "status": "fetched",
+   "origin": "http",
+   "file": "027-falkordbcom-ai-agent-memory-why-retrieval-architecture-is.md",
+   "final_url": "https://www.falkordb.com/blog/ai-agent-memory-retrieval-architecture/",
+   "title": "AI Agent Memory: Why Retrieval Architecture Is the ... - FalkorDB",
+   "source_type": "web",
+   "providers": [
+    "brave",
+    "grok"
+   ],
+   "chars": 21969
+  },
+  {
+   "url": "https://groundy.com/articles/how-ai-agents-remember-memory-architectures-that/",
+   "status": "fetched",
+   "origin": "http",
+   "file": "028-groundycom-how-ai-agents-remember-memory-architectures-that.md",
+   "final_url": "https://groundy.com/articles/how-ai-agents-remember-memory-architectures-that/",
+   "title": "How AI Agents Remember: Memory Architectures That Work | Groundy",
+   "source_type": "web",
+   "providers": [
+    "brave"
+   ],
+   "chars": 21372
+  }
+ ]
+}

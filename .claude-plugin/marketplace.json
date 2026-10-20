@@ -1,0 +1,14 @@
+{
+  "name": "brainkit",
+  "description": "The brainkit plugin: a portable, cited agent brain.",
+  "owner": {
+    "name": "Paldom"
+  },
+  "plugins": [
+    {
+      "name": "brainkit",
+      "source": "./",
+      "description": "Portable, cited agent brain: Git-native markdown research notes with gated writes and a read-only MCP server."
+    }
+  ]
+}

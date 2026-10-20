@@ -1,0 +1,234 @@
+{
+ "topic": "Core architectural principles, note organization strategies, and retrieval workflows articulated by Andrej Karpathy for personal knowledge bases.",
+ "generated_at": "2026-10-19T21:50:33+00:00",
+ "total_cited": 217,
+ "fetched": 17,
+ "attempted": 25,
+ "entries": [
+  {
+   "url": "https://aimaker.substack.com/p/llm-wiki-obsidian-knowledge-base-andrej-karphaty",
+   "status": "fetched",
+   "origin": "http",
+   "file": "005-aimakersubstackcom-how-i-took-karpathys-llm-wiki-and-built.md",
+   "final_url": "https://aimaker.substack.com/p/llm-wiki-obsidian-knowledge-base-andrej-karphaty",
+   "title": "How I Took Karpathy's LLM Wiki and Built an AI-Powered Second Brain in Obsidian",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 9198
+  },
+  {
+   "url": "https://www.mindstudio.ai/blog/andrej-karpathy-llm-wiki-knowledge-base-claude-code",
+   "status": "fetched",
+   "origin": "http",
+   "file": "006-mindstudioai-what-is-andrej-karpathys-llm-wiki-how-to-build.md",
+   "final_url": "https://www.mindstudio.ai/blog/andrej-karpathy-llm-wiki-knowledge-base-claude-code",
+   "title": "What Is Andrej Karpathy's LLM Wiki? How to Build a Personal Knowledge Base With Claude Code | MindStudio",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 20317
+  },
+  {
+   "url": "https://startupgtm.substack.com/p/self-updating-ai-wiki-knowledge-base",
+   "status": "fetched",
+   "origin": "http",
+   "file": "007-startupgtmsubstackcom-build-karpathys-self-updating-ai.md",
+   "final_url": "https://startupgtm.substack.com/p/self-updating-ai-wiki-knowledge-base",
+   "title": "Build Karpathy’s Self-Updating AI Knowledge Base in Just 90 Minutes",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 61362
+  },
+  {
+   "url": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f",
+   "status": "fetched",
+   "origin": "http",
+   "file": "008-gistgithubcom-llm-wiki-github.md",
+   "final_url": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f",
+   "title": "llm-wiki · GitHub",
+   "source_type": "social",
+   "providers": [
+    "brave",
+    "gemini",
+    "kimi"
+   ],
+   "chars": 83261
+  },
+  {
+   "url": "https://academy.dair.ai/blog/llm-knowledge-bases-karpathy",
+   "status": "fetched",
+   "origin": "http",
+   "file": "010-academydairai-llm-knowledge-bases-dairai-academy-blog.md",
+   "final_url": "https://academy.dair.ai/blog/llm-knowledge-bases-karpathy",
+   "title": "LLM Knowledge Bases | DAIR.AI Academy Blog | DAIR.AI Academy",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 7075
+  },
+  {
+   "url": "https://jamalhansen.com/blog/road-to-agentic-notes/",
+   "status": "fetched",
+   "origin": "http",
+   "file": "011-jamalhansencom-karpathys-llm-knowledge-base-method-a.md",
+   "final_url": "https://jamalhansen.com/blog/road-to-agentic-notes/",
+   "title": "Karpathy's LLM Knowledge Base Method - A Practical Starting Point | Jamal Hansen",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 9524
+  },
+  {
+   "url": "https://affine.pro/blog/what-is-llm-wiki",
+   "status": "fetched",
+   "origin": "http",
+   "file": "013-affinepro-what-is-llm-wiki-karpathys-idea-that-turns-notes.md",
+   "final_url": "https://affine.pro/blog/what-is-llm-wiki",
+   "title": "What Is LLM Wiki? Karpathy's Idea That Turns Notes Into a Brain | AFFiNE",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 71704
+  },
+  {
+   "url": "https://www.mindstudio.ai/blog/karpathy-llm-knowledge-base-architecture-compiler-analogy",
+   "status": "fetched",
+   "origin": "http",
+   "file": "014-mindstudioai-what-is-andrej-karpathys-llm-knowledge-base.md",
+   "final_url": "https://www.mindstudio.ai/blog/karpathy-llm-knowledge-base-architecture-compiler-analogy",
+   "title": "What Is Andrej Karpathy's LLM Knowledge Base Architecture? The Compiler Analogy Explained | MindStudio",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 21408
+  },
+  {
+   "url": "https://www.mindstudio.ai/blog/karpathy-llm-knowledge-base-compiler-analogy",
+   "status": "fetched",
+   "origin": "http",
+   "file": "015-mindstudioai-what-is-andrej-karpathys-llm-knowledge-base.md",
+   "final_url": "https://www.mindstudio.ai/blog/karpathy-llm-knowledge-base-compiler-analogy",
+   "title": "What Is Andrej Karpathy's LLM Knowledge Base? The Compiler Analogy for AI Memory | MindStudio",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 17876
+  },
+  {
+   "url": "https://zerofuturetech.substack.com/p/your-second-brain-rebuilt-a-complete",
+   "status": "fetched",
+   "origin": "http",
+   "file": "016-zerofuturetechsubstackcom-your-second-brain-rebuilt-a.md",
+   "final_url": "https://zerofuturetech.substack.com/p/your-second-brain-rebuilt-a-complete",
+   "title": "Your Second Brain, Rebuilt: A Complete Guide to the Karpathy Knowledge Base Method",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 16777
+  },
+  {
+   "url": "https://blog.starmorph.com/blog/karpathy-llm-wiki-knowledge-base-guide",
+   "status": "fetched",
+   "origin": "http",
+   "file": "018-blogstarmorphcom-how-to-build-karpathys-llm-wiki-the.md",
+   "final_url": "https://blog.starmorph.com/blog/karpathy-llm-wiki-knowledge-base-guide",
+   "title": "How to Build Karpathy's LLM Wiki: The Complete Guide to AI-Maintained Knowledge Bases",
+   "source_type": "social",
+   "providers": [
+    "brave",
+    "kimi"
+   ],
+   "chars": 24682
+  },
+  {
+   "url": "https://www.kunalganglani.com/blog/llm-wiki-karpathy-local-knowledge-base",
+   "status": "fetched",
+   "origin": "http",
+   "file": "019-kunalganglanicom-llm-wiki-setup-karpathys-knowledge-base.md",
+   "final_url": "https://www.kunalganglani.com/blog/llm-wiki-karpathy-local-knowledge-base",
+   "title": "LLM Wiki Setup: Karpathy's Knowledge Base [2026 Guide]",
+   "source_type": "social",
+   "providers": [
+    "brave"
+   ],
+   "chars": 31750
+  },
+  {
+   "url": "https://lmmarketcap.com/reports/llm-knowledge-bases-karpathy",
+   "status": "fetched",
+   "origin": "http",
+   "file": "021-lmmarketcapcom-llm-knowledge-bases-karpathys-self-improving.md",
+   "final_url": "https://lmmarketcap.com/reports/llm-knowledge-bases-karpathy",
+   "title": "LLM Knowledge Bases: Karpathy's Self-Improving Second Brain",
+   "source_type": "web",
+   "providers": [
+    "brave"
+   ],
+   "chars": 33543
+  },
+  {
+   "url": "https://codersera.com/blog/karpathy-llm-knowledge-base-second-brain/",
+   "status": "fetched",
+   "origin": "http",
+   "file": "022-coderseracom-karpathys-llm-knowledge-base-build-your-second.md",
+   "final_url": "https://codersera.com/blog/karpathy-llm-knowledge-base-second-brain/",
+   "title": "Karpathy's LLM Knowledge Base: Build Your Second Brain",
+   "source_type": "web",
+   "providers": [
+    "brave"
+   ],
+   "chars": 17043
+  },
+  {
+   "url": "https://www.mindstudio.ai/blog/andrej-karpathy-llm-wiki-obsidian-ai-second-brain",
+   "status": "fetched",
+   "origin": "http",
+   "file": "023-mindstudioai-andrej-karpathys-llm-wiki-build-a-self.md",
+   "final_url": "https://www.mindstudio.ai/blog/andrej-karpathy-llm-wiki-obsidian-ai-second-brain",
+   "title": "Andrej Karpathy's LLM Wiki: Build a Self-Updating AI Second Brain with Obsidian in 1 Hour | MindStudio",
+   "source_type": "web",
+   "providers": [
+    "brave"
+   ],
+   "chars": 16921
+  },
+  {
+   "url": "https://theaioperator.io/p/i-rebuilt-karpathys-llm-wiki-heres",
+   "status": "fetched",
+   "origin": "http",
+   "file": "024-theaioperatorio-karpathys-llm-wiki-gist-decoded-what-i-added.md",
+   "final_url": "https://theaioperator.io/p/i-rebuilt-karpathys-llm-wiki-heres",
+   "title": "Karpathy's LLM Wiki Gist Decoded: What I Added",
+   "source_type": "web",
+   "providers": [
+    "brave",
+    "kimi"
+   ],
+   "chars": 18271
+  },
+  {
+   "url": "https://www.mindstudio.ai/blog/what-is-llm-knowledge-base-karpathy-wiki-architecture",
+   "status": "fetched",
+   "origin": "http",
+   "file": "025-mindstudioai-what-is-the-llm-wiki-karpathys-knowledge-base.md",
+   "final_url": "https://www.mindstudio.ai/blog/what-is-llm-wiki-karpathy-knowledge-base-architecture",
+   "title": "What Is the LLM Wiki? Karpathy's Knowledge Base Architecture for AI Agents | MindStudio",
+   "source_type": "web",
+   "providers": [
+    "brave"
+   ],
+   "chars": 21222
+  }
+ ]
+}

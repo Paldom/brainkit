@@ -1,0 +1,4 @@
+{"id": "lc-001", "query": "which region is the brain service deployed in", "relevant": ["lc-new-region"], "stratum": "lifecycle", "family": "lifecycle/dev", "split": "dev"}
+{"id": "lc-002", "query": "vector index choice for the embedding rung", "relevant": ["lc-new-index"], "stratum": "lifecycle", "family": "lifecycle/dev", "split": "dev"}
+{"id": "lc-003", "query": "ingest log retention policy", "relevant": ["lc-new-retention"], "stratum": "lifecycle", "family": "lifecycle/heldout", "split": "heldout"}
+{"id": "lc-004", "query": "token cache sizing", "relevant": ["lc-new-cache"], "stratum": "lifecycle", "family": "lifecycle/heldout", "split": "heldout"}

@@ -335,6 +335,20 @@ class TestSupersession:
         assert "superseded" in hits[1].labels
         assert not [f for f in lint(brain) if "supersession" in f.check]
 
+    def test_context_leaves_superseded_out_unless_asked(
+        self, brain: Path, tmp_path: Path
+    ) -> None:
+        """The read-path guard: what an agent acts on never carries a revoked fact."""
+        from brainkit.brain import context
+
+        self._pair(brain, tmp_path)
+        hits, _ = context(brain, "cache claim latency", kind="note")
+        assert [h.slug for h in hits] == ["new"]
+        history, _ = context(
+            brain, "cache claim latency", kind="note", include_superseded=True
+        )
+        assert [h.slug for h in history] == ["new", "old"]
+
     def test_missing_inverse_and_dangling(self, brain: Path, tmp_path: Path) -> None:
         self._pair(brain, tmp_path, inverse=False)
         ingest_notes(

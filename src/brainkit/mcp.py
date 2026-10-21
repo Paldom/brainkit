@@ -80,13 +80,15 @@ TOOLS = [
         "context",
         "Ranked hits with their descent path and coverage signals (gaps, single-run "
         "evidence, flagged sources). With `budget`, returns the evidence itself: "
-        "whole notes or sections within that many characters.",
+        "whole notes or sections within that many characters. Notes another note "
+        "supersedes are left out unless `include_superseded`.",
         {
             "query": _QUERY,
             "limit": _LIMIT,
             "kind": {"type": "string", "enum": _KINDS},
             "budget": {"type": "integer", "minimum": 1},
             "exclude": {"type": "array", "items": {"type": "string"}},
+            "include_superseded": {"type": "boolean"},
         },
         ["query"],
     ),
@@ -235,6 +237,7 @@ class Server:
             limit=limit,
             kind=kind,
             exclude=_strings(args, "exclude"),
+            include_superseded=args.get("include_superseded") is True,
         )
         return {
             "schema": SCHEMA,

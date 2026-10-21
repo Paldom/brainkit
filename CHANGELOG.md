@@ -8,6 +8,29 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- **researchkit research-pack contract v2.** Ingest checks the materials
+  manifest before writing anything. It accepts v1 (no `schema_version`) and v2,
+  and refuses an unknown version, an incomplete pack (`complete` not true) or a
+  material file whose sha256 differs from the manifest. A `claims.jsonl` whose
+  digest differs from `claims_sha256` is refused too.
+- **Cited claims in the topic note.** When the run carries `claims.jsonl`, its
+  topic note lists the verbatim cited sentences under `## Cited claims`, each
+  linked to its source note. With `include_reports=False` the claims replace the
+  run's synthesized summary: the brain holds what the sources were cited for,
+  not the report's prose.
+- **Run ledger** (`.brainkit/ledger.jsonl`): one row per run, URL and content
+  digest. A re-ingest skips a capture this run already merged, and the
+  provenance trail survives later rewrites.
+
+### Changed
+
+- **`context` leaves superseded notes out by default** (the read-path guard). A
+  note another note supersedes no longer reaches the answer pack an agent acts
+  on. `--include-superseded` (CLI) and `include_superseded` (MCP) bring it back
+  for history questions. `search` still ranks it below its replacement.
+
 ## [0.3.0] - 2026-10-20
 
 The brain becomes trustworthy to write into and measurable to search. Every

@@ -249,6 +249,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--include-drafts", action="store_true", help="Also return status: draft"
     )
     ctx.add_argument(
+        "--include-superseded",
+        action="store_true",
+        help="Also return notes another note supersedes (history questions)",
+    )
+    ctx.add_argument(
         "--budget",
         type=int,
         default=None,
@@ -816,6 +821,7 @@ def main(argv: list[str] | None = None) -> int:
                 as_of=args.as_of,
                 include_drafts=args.include_drafts,
                 vectors=args.vectors,
+                include_superseded=args.include_superseded,
             )
         except ValueError as e:
             return _fail(args, e)

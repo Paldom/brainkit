@@ -703,6 +703,7 @@ def _preflight(project_dir: Path) -> None:
         current = pending.pop()
         _read_json(current / "result.json")
         _material_files(current / "materials")
+        _read_claims(current)
         report = current / "report.md"
         if report.is_file():
             try:
@@ -772,6 +773,114 @@ def _corroboration(projects: list[str]) -> int:
     return len(projects)
 
 
+# researchkit's materials manifest versions this brainkit understands. v1 has
+# no ``schema_version``; v2 adds per-file sha256, ``claims_sha256`` and
+# ``complete`` (researchkit docs/research-pack.md, contract v2).
+MANIFEST_VERSIONS = (1, 2)
+
+
+def _manifest_version(path: Path, manifest: Mapping[str, object]) -> int:
+    """Validate the manifest's contract version before anything is written."""
+    raw = manifest.get("schema_version", 1)
+    if (
+        not isinstance(raw, int)
+        or isinstance(raw, bool)
+        or raw not in MANIFEST_VERSIONS
+    ):
+        raise ValueError(
+            f"{path}: materials schema_version {raw!r} is not supported "
+            f"(this brainkit reads {', '.join(map(str, MANIFEST_VERSIONS))}) — "
+            "upgrade brainkit"
+        )
+    if raw >= 2 and manifest.get("complete") is not True:
+        raise ValueError(
+            f"{path}: the research pack is incomplete (complete: "
+            f"{manifest.get('complete')!r}) — the run did not finish writing it"
+        )
+    return raw
+
+
+_MAX_TOPIC_CLAIMS = 200
+
+
+def _read_claims(project_dir: Path) -> list[dict[str, object]]:
+    """researchkit's ``claims.jsonl``: one cited sentence and source per row.
+
+    Validated in preflight (malformed rows, and a digest that does not match
+    the v2 manifest's ``claims_sha256``, fail before any write).
+    """
+    path = project_dir / "claims.jsonl"
+    if not path.is_file():
+        return []
+    data = path.read_bytes()
+    manifest_path = project_dir / "materials" / "index.json"
+    if manifest_path.is_file():
+        try:
+            expected = json.loads(manifest_path.read_text(encoding="utf-8")).get(
+                "claims_sha256"
+            )
+        except (json.JSONDecodeError, AttributeError):
+            expected = None  # the manifest check reports a corrupt manifest
+        if (
+            isinstance(expected, str)
+            and expected
+            and hashlib.sha256(data).hexdigest() != expected
+        ):
+            raise ValueError(f"{path}: does not match the manifest's claims_sha256")
+    rows: list[dict[str, object]] = []
+    for i, line in enumerate(data.decode("utf-8", "replace").splitlines(), start=1):
+        if not line.strip():
+            continue
+        try:
+            row = json.loads(line)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"{path}:{i}: not JSON ({e})") from e
+        if not isinstance(row, dict) or not row.get("sentence"):
+            raise ValueError(f"{path}:{i}: a claim needs a 'sentence'")
+        rows.append(row)
+    return rows
+
+
+class _Ledger:
+    """``.brainkit/ledger.jsonl``: which run brought which URL at which hash.
+
+    Lets a re-ingest skip a source whose content this run already merged,
+    and keeps the provenance trail even when notes are later rewritten.
+    """
+
+    def __init__(self, brain_dir: Path) -> None:
+        self.path = brain_dir / ".brainkit" / "ledger.jsonl"
+        self.seen: set[tuple[str, str, str]] = set()
+        self.new: list[dict[str, str]] = []
+        if self.path.is_file():
+            for line in self.path.read_text(encoding="utf-8").splitlines():
+                try:
+                    row = json.loads(line)
+                except json.JSONDecodeError:
+                    continue  # a torn last line from a crash: skip it
+                if isinstance(row, dict):
+                    self.seen.add(
+                        (str(row.get("run")), str(row.get("url")), str(row.get("hash")))
+                    )
+
+    def has(self, run: str, url: str, digest: str) -> bool:
+        return bool(digest) and (run, url, digest) in self.seen
+
+    def add(self, run: str, url: str, digest: str) -> None:
+        if digest and (run, url, digest) not in self.seen:
+            self.seen.add((run, url, digest))
+            self.new.append({"run": run, "url": url, "hash": digest, "at": _now()})
+
+    def flush(self) -> None:
+        if not self.new:
+            return
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        _confine(self.path)
+        with self.path.open("a", encoding="utf-8") as fh:
+            fh.writelines(json.dumps(row) + "\n" for row in self.new)
+        self.new = []
+
+
 def _material_files(materials_dir: Path) -> list[Path]:
     """Material files to ingest, manifest-first.
 
@@ -795,6 +904,7 @@ def _material_files(materials_dir: Path) -> list[Path]:
             ) from e
         if not isinstance(entries, list):
             raise ValueError(f"{manifest_path}: 'entries' is not a list")
+        version = _manifest_version(manifest_path, manifest)
         files: list[Path] = []
         for i, entry in enumerate(entries):
             if not isinstance(entry, dict):
@@ -818,6 +928,14 @@ def _material_files(materials_dir: Path) -> list[Path]:
                     f"{manifest_path}: fetched file {name!r} is missing from "
                     "materials/ — re-run `researchkit materials` first"
                 )
+            expected = entry.get("sha256")
+            if version >= 2 and isinstance(expected, str) and expected:
+                actual = hashlib.sha256(candidate.read_bytes()).hexdigest()
+                if actual != expected:
+                    raise ValueError(
+                        f"{manifest_path}: {name!r} does not match its sha256 "
+                        "(edited or corrupted after archiving)"
+                    )
             files.append(candidate)
         return files
     return sorted(p for p in materials_dir.glob("*.md") if p.is_file())
@@ -1168,6 +1286,8 @@ def _ingest_project(
     repaired: list[str] = []
     skip_reasons: list[str] = []  # material skips first; sub-project skips appended
     materials_dir = project_dir / "materials"
+    ledger = _Ledger(brain_dir)
+    note_by_url: dict[str, Path] = {}
     if materials_dir.is_dir():
         for odd in sorted(materials_dir.glob("*.md")):
             if not odd.is_file():
@@ -1183,6 +1303,13 @@ def _ingest_project(
             skip_reasons.append(f"materials/{material.name}: {reason}")
             continue
         note_path = _source_note_path(sources_dir, url, material.stem)
+        note_by_url[url] = note_path
+        digest = str(note.meta.get("content_digest") or "")
+        if note_path.is_file() and ledger.has(project_name, url, digest):
+            # This run already merged this exact capture: nothing to redo.
+            source_notes.append(note_path)
+            citations.append((note_path, note.meta.get("title") or url))
+            continue
         _merge_source(
             note_path,
             note.body.strip(),
@@ -1194,10 +1321,12 @@ def _ingest_project(
             project=project_name,
             topics=[topic],
         )
+        ledger.add(project_name, url, digest)
         source_notes.append(note_path)
         # THIS material's title, not the merged note's: the note keeps the
         # fuller archive's title, which a sibling sub-project may have set.
         citations.append((note_path, note.meta.get("title") or url))
+    ledger.flush()
 
     # `or ""` before str(): a JSON null would otherwise become the summary
     # "None".
@@ -1210,6 +1339,15 @@ def _ingest_project(
     # description, so the run is kept as navigation only and flagged.
     synthesis_failed = _synthesis_failed(summary, result) or _synthesis_missing(result)
     if synthesis_failed:
+        summary = ""
+    # researchkit's claims table: verbatim cited sentences, each tied to its
+    # source. Without report prose (include_reports=False) the claims ARE
+    # the run's content, so the synthesized summary is left out (PLAN 2.12).
+    claims = [
+        (str(row["sentence"]), note_by_url.get(str(row.get("canonical_url") or "")))
+        for row in _read_claims(project_dir)
+    ][:_MAX_TOPIC_CLAIMS]
+    if claims and not include_reports:
         summary = ""
     tags = _tags(result)
     pruned = _prune_project_sources(sources_dir, project_name, set(source_notes))
@@ -1266,6 +1404,7 @@ def _ingest_project(
         reports=report_notes,
         parent=_parent,
         synthesis_failed=synthesis_failed,
+        claims=claims,
     )
 
     build_index(brain_dir)
@@ -1357,6 +1496,7 @@ def _write_node_note(
     reports: list[Path],
     parent: str,
     synthesis_failed: bool = False,
+    claims: Sequence[tuple[str, Path | None]] = (),
 ) -> Path:
     """Write one research run's note at the level its shape earns.
 
@@ -1402,6 +1542,16 @@ def _write_node_note(
         # Without this the report sections are unreachable: nothing links to
         # them, so the pyramid has a rung an agent can only find by search.
         body_parts += ["## Report sections", _link_list(reports, directory)]
+    if claims:
+        lines = []
+        for sentence, note in claims:
+            link = (
+                f" ([source]({os.path.relpath(note, directory).replace(os.sep, '/')}))"
+                if note is not None
+                else ""
+            )
+            lines.append(f"- {_link_text(sentence)}{link}")
+        body_parts += ["## Cited claims", "\n".join(lines)]
     if source_notes or not children:
         body_parts += [
             "## Sources",
@@ -4076,8 +4226,15 @@ def context(
     include_drafts: bool = False,
     vectors: bool = False,
     exclude: Sequence[str] = (),
+    include_superseded: bool = False,
 ) -> tuple[list[SearchHit], Coverage]:
     """Search, plus breadcrumbs and mechanical coverage signals.
+
+    ``context`` is what an agent acts on, so a note another note supersedes
+    is left out unless ``include_superseded`` (history questions). ``search``
+    still ranks it, below its replacement: a revoked fact that reaches an
+    answer pack drives unsafe actions (digest 6: 358 of 810 without a
+    read-path guard).
 
     The verb every comparable system pairs with plain retrieval — gbrain's
     ``think``, Hindsight's ``reflect`` — and both report the differentiator is
@@ -4088,6 +4245,12 @@ def context(
     """
     corpus = corpus or Corpus(brain_dir)
     skip = set(exclude)
+    if not include_superseded:
+        skip |= {
+            slug
+            for slug, (_, note) in corpus.by_slug.items()
+            if note.meta.get("superseded_by")
+        }
     ranked = search(
         brain_dir,
         query,

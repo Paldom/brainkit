@@ -41,6 +41,9 @@ eval with dev/held-out splits.
 - **Rung 2, opt-in.** `brainkit vectors pull|build|status|export|import` and
   `--vectors`: a pinned 256-dimension static embedding model, stdlib-only
   inference, fused by RRF. `vectors pull` is brainkit's only network access.
+- **Answer-level check.** `tests/eval/answer_check.py` runs real agents on 20
+  fixed questions (CLI + skill vs MCP) and scores consultation, citations,
+  superseded decisions and gaps deterministically; results are in the README.
 - **MCP server.** `brainkit mcp` serves the brain read-only over stdio (protocol
   2026-07-28 and 2025-11-25).
 - **Claude Code plugin.** `.claude-plugin/` packages the skill, plus an opt-in

@@ -247,6 +247,34 @@ adds the skill, and an opt-in SessionStart hook (set `BRAINKIT_HOOKS=1`) prints
 the brain pointer at the start of each session. Any MCP client can use
 `brainkit mcp` instead.
 
+### Do agents actually use it?
+
+Ranking a note first is not the same as an agent finding, reading and citing it.
+[`tests/eval/answer_check.py`](tests/eval/answer_check.py) runs real agents on
+20 fixed questions against the eval brain: 10 answered by one source note, 2 by
+a run-level synthesis, 4 where a newer decision supersedes an older one, and 4
+the brain does not cover. Each agent gets the question cold; the only hint is
+the brain pointer in `AGENTS.md`, and the brain is reached either through the
+CLI and skill or through `brainkit mcp`. Scoring is deterministic (expected
+facts and URLs, no model judging a model). Measured 2026-10-21:
+
+| Agent (model)       | Setup       | Consulted brain | Answer right | Cited the source note¹ | Current decision² | Used the web |
+| ------------------- | ----------- | --------------- | ------------ | ---------------------- | ----------------- | ------------ |
+| Claude (opus 5.5)   | CLI + skill | 20/20           | 20/20        | 8/10                   | 4/4               | 3/20         |
+| Claude (opus 5.5)   | MCP         | 20/20           | 20/20        | 8/10                   | 4/4               | 0/20         |
+| Codex (gpt-6-astra) | CLI + skill | 20/20           | 20/20        | 8/10                   | 4/4               | 15/20        |
+| Codex (gpt-6-astra) | MCP         | 20/20           | 20/20        | 9/10                   | 4/4               | 15/20        |
+
+¹ Of the 10 source questions: the answer cites the brain note's `url`, not only
+a page found elsewhere. ² The superseded decision, if mentioned, is marked as
+superseded.
+
+On the 4 questions the brain does not cover, neither agent cited the brain.
+Claude said the brain had nothing (4/4 with the CLI, 3/4 with MCP); Codex
+answered from the web without saying so. Every search returned the needed note
+(zero retrieval failures), which is why rung 2 stays opt-in. One run per
+question: read the numbers as evidence, not proof.
+
 ## Honest edges
 
 - Default retrieval is rungs 0–1 plus the link graph: BM25 with per-level length
